@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.maciej.imiela.tilt"
+    package="com.maciej.imiela.just.tilt.controller"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -27,6 +27,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="MainActivity" />
         </activity>
+        <service android:name="com.maciej.imiela.just.tilt.logic.JTMusic"></service>
     </application>
 
 </manifest>
