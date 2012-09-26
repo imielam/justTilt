@@ -16,6 +16,8 @@ public class JTEngine {
 	public static final int R_VOLUME = 100;
 	public static final int L_VOLUME = 100;
 	public static final boolean LOOP_BACKGRAND_MUSIC = true;
+	
+	public static final int BACKGROUND_LAYER_ONE = R.drawable.background;
 
 	public static Context context; // hold the thread that is playing the music
 	// public static boolean isPlayingMusic = false;

@@ -64,17 +64,17 @@ public class JTMainMenu extends Activity {
         
         start.setOnClickListener(new OnClickListener() {
 			
-			@Override
 			public void onClick(View v) {
 				/**
 				 * Start Game!!
 				 */
+//				Intent game = new Intent(getApplicationContext(), JTGame.class);
+//				JTMainMenu.this.startActivity(game);
 				
 			}
 		});
         exit.setOnClickListener(new OnClickListener() {
 			
-			@Override
 			public void onClick(View v) {
 				boolean clean = false;
 				clean = engine.onExit(v);
