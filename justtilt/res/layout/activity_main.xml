@@ -9,4 +9,30 @@
         android:layout_height="match_parent"
         android:background="@drawable/splash_screen" />
 
+    <RelativeLayout
+        android:id="@+id/buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp" >
+
+        <ImageButton
+            android:id="@+id/btnStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:clickable="true"
+            android:src="@drawable/startselector" >
+        </ImageButton>
+        
+        <ImageButton
+            android:id="@+id/btnExit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:clickable="true"
+            android:src="@drawable/exitselector" >
+        </ImageButton>
+    </RelativeLayout>
+
 </RelativeLayout>
