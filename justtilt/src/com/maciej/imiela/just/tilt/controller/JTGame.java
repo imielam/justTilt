@@ -23,12 +23,12 @@ public class JTGame extends Activity{
 		gameView.onPause();
 	}
 
-	@Override
-	protected void onResume() {
-		// TODO Auto-generated method stub
-		super.onResume();
-		gameView.onResume();
-	}
+//	@Override
+//	protected void onResume() {
+//		// TODO Auto-generated method stub
+//		super.onResume();
+//		gameView.onResume();
+//	}
 
 //	@Override
 //	protected void onStop() {

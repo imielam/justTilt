@@ -19,9 +19,11 @@ public class JTBackground {
 	private ByteBuffer indexBuffer;
 
 	private int[] textures = new int[1];
-	private float vertices[] = { 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-			1.0f, 0.0f, 0.0f, 1.0f, 0.0f, };
-	private float texture[] = { 0.0f, 0.0f, 1.0f, 0f, 1, 1.0f, 0f, 1f, };
+//	private float vertices[] = { 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+//			1.0f, 0.0f, 0.0f, 1.0f, 0.0f, };
+	private float vertices[] = {0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+			0.0f, 0.0f, 1.0f, 1.0f, 0.0f, };
+	private float texture[] = { 0f, 1f, 0.0f, 0.0f, 1.0f, 0f, 1, 1.0f, };
 
 	private byte indices[] = { 0, 1, 2, 0, 2, 3, };
 

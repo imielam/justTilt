@@ -68,8 +68,8 @@ public class JTMainMenu extends Activity {
 				/**
 				 * Start Game!!
 				 */
-//				Intent game = new Intent(getApplicationContext(), JTGame.class);
-//				JTMainMenu.this.startActivity(game);
+				Intent game = new Intent(getApplicationContext(), JTGame.class);
+				JTMainMenu.this.startActivity(game);
 				
 			}
 		});

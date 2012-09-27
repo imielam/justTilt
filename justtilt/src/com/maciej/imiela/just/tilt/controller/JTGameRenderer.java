@@ -15,6 +15,13 @@ public class JTGameRenderer implements Renderer{
 	
 	public void onDrawFrame(GL10 gl) {
 		// TODO Auto-generated method stub
+		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+
+		scrollBackground1(gl);
+//
+//		gl.glEnable(GL10.GL_BLEND);
+//		gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE);
+
 		
 	}
 	/**
