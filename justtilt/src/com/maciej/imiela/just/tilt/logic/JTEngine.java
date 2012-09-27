@@ -7,17 +7,18 @@ import android.view.View;
 import com.maciej.imiela.just.tilt.controller.R;
 
 public class JTEngine {
-	/* Constants that will be used in the game */
+	/** Constants that will be used in the game */
 	public static final int GAME_THREAD_DELAY = 4000;
 	public static final int MENU_BUTTON_ALPHA = 0;
 	public static final boolean HEPTIC_BUTTON_FEEDBACK = true;
-	/* Constants that will be essential to use music */
+	/** Constants that will be essential to use music */
 	public static final int SPLAH_SCREEN_MUSIC = R.raw.background_music_by_setuniman;
 	public static final int R_VOLUME = 100;
 	public static final int L_VOLUME = 100;
 	public static final boolean LOOP_BACKGRAND_MUSIC = true;
-	
+	/**constants that are essentials to draw background*/
 	public static final int BACKGROUND_LAYER_ONE = R.drawable.background;
+	public static final float SCROLL_BACKGROUND_1 = 0.002f;
 
 	public static Context context; // hold the thread that is playing the music
 	// public static boolean isPlayingMusic = false;
