@@ -11,7 +11,10 @@ import android.opengl.GLSurfaceView.Renderer;
 public class JTGameRenderer implements Renderer{
 
 	private JTBackground background = new JTBackground();
+	private JTBackground backgroung1 = new JTBackground();
+	
 	private float bgScroll1;
+	private float bgScroll2;
 	
 	public void onDrawFrame(GL10 gl) {
 		// TODO Auto-generated method stub
@@ -50,6 +53,12 @@ public class JTGameRenderer implements Renderer{
 		bgScroll1 += JTEngine.SCROLL_BACKGROUND_1;
 		gl.glLoadIdentity();
 	}
+	
+	private void scrollBackground2() {
+		if (bgScroll2 == Float.MAX_VALUE){
+			bgScroll2 = 0f;
+		}
+	}
 
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 		gl.glViewport(0, 0, width, height);
@@ -72,6 +81,7 @@ public class JTGameRenderer implements Renderer{
 		gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE);
 		
 		background.loadTexture(gl, JTEngine.BACKGROUND_LAYER_ONE, JTEngine.context);
+		backgroung1.loadTexture(gl, JTEngine.BACKGROUND_LAYER_TWO, JTEngine.context);
 		
 		//TODO load game textures
 	}

@@ -19,6 +19,8 @@ public class JTEngine {
 	/**constants that are essentials to draw background*/
 	public static final int BACKGROUND_LAYER_ONE = R.drawable.background;
 	public static final float SCROLL_BACKGROUND_1 = 0.002f;
+	public static final int BACKGROUND_LAYER_TWO = R.drawable.secendary_background;
+	public static float SCROLL_BACKGROUND_2 = 0.007f;
 
 	public static Context context; // hold the thread that is playing the music
 	// public static boolean isPlayingMusic = false;
