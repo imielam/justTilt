@@ -18,9 +18,16 @@ public class JTGameRenderer implements Renderer{
 	
 	public void onDrawFrame(GL10 gl) {
 		// TODO Auto-generated method stub
-		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+		try {
+			Thread.sleep(JTEngine.GAME_THREAD_FPS_SLEEP);
+			} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			}
+			gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 
 		scrollBackground1(gl);
+		scrollBackground2(gl);
 //
 //		gl.glEnable(GL10.GL_BLEND);
 //		gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE);
@@ -54,10 +61,24 @@ public class JTGameRenderer implements Renderer{
 		gl.glLoadIdentity();
 	}
 	
-	private void scrollBackground2() {
+	private void scrollBackground2(GL10 gl) {
 		if (bgScroll2 == Float.MAX_VALUE){
 			bgScroll2 = 0f;
 		}
+		
+		gl.glMatrixMode(GL10.GL_MODELVIEW);
+		gl.glLoadIdentity();
+		gl.glPushMatrix();
+		gl.glScalef(.5f, 1f, 1f);
+		gl.glTranslatef(1.5f, 0f, 0f);
+		
+		gl.glMatrixMode(GL10.GL_TEXTURE);
+		gl.glLoadIdentity();
+		gl.glTranslatef( 0.0f,bgScroll2, 0.0f);
+		backgroung1.draw(gl);
+		gl.glPopMatrix();
+		bgScroll2 += JTEngine.SCROLL_BACKGROUND_2;
+		gl.glLoadIdentity();
 	}
 
 	public void onSurfaceChanged(GL10 gl, int width, int height) {

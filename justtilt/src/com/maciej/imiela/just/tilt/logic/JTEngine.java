@@ -11,13 +11,14 @@ public class JTEngine {
 	public static final int GAME_THREAD_DELAY = 4000;
 	public static final int MENU_BUTTON_ALPHA = 0;
 	public static final boolean HEPTIC_BUTTON_FEEDBACK = true;
+	public static final int GAME_THREAD_FPS_SLEEP = (1000/60);
 	/** Constants that will be essential to use music */
 	public static final int SPLAH_SCREEN_MUSIC = R.raw.background_music_by_setuniman;
 	public static final int R_VOLUME = 100;
 	public static final int L_VOLUME = 100;
 	public static final boolean LOOP_BACKGRAND_MUSIC = true;
 	/**constants that are essentials to draw background*/
-	public static final int BACKGROUND_LAYER_ONE = R.drawable.background;
+	public static final int BACKGROUND_LAYER_ONE = R.drawable.jt_background1;
 	public static final float SCROLL_BACKGROUND_1 = 0.002f;
 	public static final int BACKGROUND_LAYER_TWO = R.drawable.secendary_background;
 	public static float SCROLL_BACKGROUND_2 = 0.007f;
