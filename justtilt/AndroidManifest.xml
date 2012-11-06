@@ -31,10 +31,10 @@
             />
         </activity>
 
-        <service android:name="com.maciej.imiela.just.tilt.logic.JTMusic" >
+        <service android:name="com.maciej.imiela.just.tilt.model.JTMusic" >
         </service>
 
-        <activity android:name="JTGame" 
+        <activity android:name=".JTGame" 
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Holo.NoActionBar" >
         </activity>

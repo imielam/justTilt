@@ -7,8 +7,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 
-import com.maciej.imiela.just.tilt.logic.JTEngine;
-import com.maciej.imiela.just.tilt.logic.JTMusic;
+import com.maciej.imiela.just.tilt.model.JTEngine;
+import com.maciej.imiela.just.tilt.model.JTMusic;
 
 public class JTMainMenu extends Activity {
 

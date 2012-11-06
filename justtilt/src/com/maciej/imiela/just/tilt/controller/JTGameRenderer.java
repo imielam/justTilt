@@ -5,9 +5,9 @@ import javax.microedition.khronos.opengles.GL10;
 
 import android.opengl.GLSurfaceView.Renderer;
 
-import com.maciej.imiela.just.tilt.logic.JTBackground;
-import com.maciej.imiela.just.tilt.logic.JTEngine;
-import com.maciej.imiela.just.tilt.logic.JTGoodGuy;
+import com.maciej.imiela.just.tilt.model.JTBackground;
+import com.maciej.imiela.just.tilt.model.JTEngine;
+import com.maciej.imiela.just.tilt.model.JTGoodGuy;
 
 public class JTGameRenderer implements Renderer {
 

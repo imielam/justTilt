@@ -1,4 +1,4 @@
-package com.maciej.imiela.just.tilt.logic;
+package com.maciej.imiela.just.tilt.model;
 
 import android.app.Service;
 import android.content.Context;

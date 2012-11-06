@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
 
-import com.maciej.imiela.just.tilt.logic.JTEngine;
+import com.maciej.imiela.just.tilt.model.JTEngine;
 
 public class MainActivity extends Activity {
 

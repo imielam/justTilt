@@ -1,4 +1,4 @@
-package com.maciej.imiela.just.tilt.logic;
+package com.maciej.imiela.just.tilt.model;
 
 import java.io.IOException;
 import java.io.InputStream;
