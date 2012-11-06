@@ -12,6 +12,8 @@ import com.maciej.imiela.just.tilt.logic.JTMusic;
 
 public class JTMainMenu extends Activity {
 
+	private JTEngine engine;
+	
 	/**
 	 * called when the activity is first created.
 	 */
@@ -48,7 +50,7 @@ public class JTMainMenu extends Activity {
         };
         JTEngine.musicThread.start();
         
-        final JTEngine engine = new JTEngine();
+        engine = new JTEngine();
         
         /**
          * Set menu button options
@@ -85,6 +87,12 @@ public class JTMainMenu extends Activity {
 				
 			}
 		});
+    }
+    
+    @Override
+    protected void onStop() {
+    	super.onStop();
+    	engine.onExit(null);
     }
 
 

@@ -11,13 +11,13 @@ public class JTEngine {
 	public static final int GAME_THREAD_DELAY = 4000;
 	public static final int MENU_BUTTON_ALPHA = 0;
 	public static final boolean HEPTIC_BUTTON_FEEDBACK = true;
-	public static final int GAME_THREAD_FPS_SLEEP = (1000/60);
+	public static final int GAME_THREAD_FPS_SLEEP = (1000 / 60);
 	/** Constants that will be essential to use music */
 	public static final int SPLAH_SCREEN_MUSIC = R.raw.background_music_by_setuniman;
 	public static final int R_VOLUME = 100;
 	public static final int L_VOLUME = 100;
 	public static final boolean LOOP_BACKGRAND_MUSIC = true;
-	/**constants that are essentials to draw background*/
+	/** constants that are essentials to draw background */
 	public static final int BACKGROUND_LAYER_ONE = R.drawable.jt_background1;
 	public static final float SCROLL_BACKGROUND_1 = 0.002f;
 	public static final int BACKGROUND_LAYER_TWO = R.drawable.secendary_background;
@@ -26,6 +26,19 @@ public class JTEngine {
 	public static Context context; // hold the thread that is playing the music
 	// public static boolean isPlayingMusic = false;
 	public static Thread musicThread;
+	/** move the good character */
+	public static int playerFlightAction = 0; // check the stae of the goodGuy
+	public static final int PLAYER_SHIP = R.drawable.good_sprite;
+	public static final int PLAYER_BANK_LEFT_1 = 1;
+	public static final int PLAYER_RELEASE = 2;
+	public static final int PLAYER_BANK_RIGHT_1 = 3;
+	public static final float PLAYER_BANK_SPEED = .1f;
+	public static float playerBankPosX = 4.5f;
+	/*
+	 * constant that describe how often the sprite is animated (9 animation of
+	 * the background for each sprite)
+	 */
+	public static final int PLAYER_FRAMES_BETWEEN_ANI = 9; 
 
 	/**
 	 * Method that is called when the Exit button is pressed. Perform any
