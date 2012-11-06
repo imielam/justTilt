@@ -73,7 +73,9 @@ public class JTBackground {
 				texture);
 		Bitmap bitmap = null;
 		try {
-			bitmap = BitmapFactory.decodeStream(imagestream);
+			BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+            bitmapOptions.inPreferredConfig = Bitmap.Config.RGB_565;
+			bitmap = BitmapFactory.decodeStream(imagestream, null, bitmapOptions);
 
 		} catch (Exception e) {
 

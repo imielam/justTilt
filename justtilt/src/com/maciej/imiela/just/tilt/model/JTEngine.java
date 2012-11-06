@@ -28,10 +28,10 @@ public class JTEngine {
 	public static Thread musicThread;
 	/** move the good character */
 	public static int playerFlightAction = 0; // check the stae of the goodGuy
-	public static final int PLAYER_SHIP = R.drawable.good_sprite;
+	public static final int PLAYER_SHIP = R.drawable.good_guy;
 	public static final int PLAYER_BANK_LEFT_1 = 1;
-	public static final int PLAYER_RELEASE = 2;
-	public static final int PLAYER_BANK_RIGHT_1 = 3;
+	public static final int PLAYER_RELEASE = 3;
+	public static final int PLAYER_BANK_RIGHT_1 = 4;
 	public static final float PLAYER_BANK_SPEED = .1f;
 	public static float playerBankPosX = 4.5f;
 	/*

@@ -88,9 +88,8 @@ public class JTMainMenu extends Activity {
 			}
 		});
     }
-    
     @Override
-    protected void onStop() {
+    protected void onDestroy() {
     	super.onStop();
     	engine.onExit(null);
     }

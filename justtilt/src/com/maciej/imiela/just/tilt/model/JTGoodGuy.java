@@ -28,8 +28,8 @@ public class JTGoodGuy {
 
 	private float texture[] = {//
 	0.0f, 0.0f,//
-			1 / 3f, 0.0f,//
-			1 / 3f, 1f,//
+			1 / 5f, 0.0f,//
+			1 / 5f, 1f,//
 			0.0f, 1f,//
 	};
 
@@ -80,7 +80,9 @@ public class JTGoodGuy {
 				texture);
 		Bitmap bitmap = null;
 		try {
-			bitmap = BitmapFactory.decodeStream(imagestream);
+			BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+            bitmapOptions.inPreferredConfig = Bitmap.Config.RGB_565;
+			bitmap = BitmapFactory.decodeStream(imagestream, null, bitmapOptions);
 		} catch (Exception e) {
 		} finally {
 			try {

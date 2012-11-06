@@ -41,6 +41,31 @@ public class JTGameRenderer implements Renderer {
 	private void movePlayer1(GL10 gl) {
 		switch (JTEngine.playerFlightAction) {
 		case JTEngine.PLAYER_BANK_LEFT_1:
+			gl.glMatrixMode(GL10.GL_MODELVIEW);
+			gl.glLoadIdentity();
+			gl.glPushMatrix();
+			gl.glScalef(.1f, .1f, 1f);
+			if (this.goodGuyBankFrames < JTEngine.PLAYER_FRAMES_BETWEEN_ANI && JTEngine.playerBankPosX > 0) {
+				JTEngine.playerBankPosX -= JTEngine.PLAYER_BANK_SPEED;
+				gl.glTranslatef(JTEngine.playerBankPosX, 0, 0);
+				gl.glMatrixMode(GL10.GL_TEXTURE);
+				gl.glLoadIdentity();
+				gl.glTranslatef(3 / 5f, 0.0f, 0.0f);
+				goodGuyBankFrames += 1;
+			}else if (this.goodGuyBankFrames >= JTEngine.PLAYER_FRAMES_BETWEEN_ANI && JTEngine.playerBankPosX > 0){
+				JTEngine.playerBankPosX -= JTEngine.PLAYER_BANK_SPEED;
+				gl.glMatrixMode(GL10.GL_TEXTURE);
+				gl.glLoadIdentity();
+				gl.glTranslatef(4/5f, 0, 0);
+			} else {
+				gl.glTranslatef(JTEngine.playerBankPosX, 0f, 0f);
+				gl.glMatrixMode(GL10.GL_TEXTURE);
+				gl.glLoadIdentity();
+				gl.glTranslatef(2 / 5f, 0f, 0.0f);
+			}
+			player1.draw(gl);
+			gl.glPopMatrix();
+			gl.glLoadIdentity();
 			break;
 		case JTEngine.PLAYER_BANK_RIGHT_1:
 			break;
@@ -52,7 +77,7 @@ public class JTGameRenderer implements Renderer {
 			gl.glTranslatef(JTEngine.playerBankPosX, 0f, 0f);
 			gl.glMatrixMode(GL10.GL_TEXTURE);
 			gl.glLoadIdentity();
-			gl.glTranslatef(1 / 3f, 0f, 0.0f);
+			gl.glTranslatef(2 / 5f, 0f, 0.0f);
 			player1.draw(gl);
 			gl.glPopMatrix();
 			gl.glLoadIdentity();
@@ -63,10 +88,10 @@ public class JTGameRenderer implements Renderer {
 			gl.glLoadIdentity();
 			gl.glPushMatrix();
 			gl.glScalef(.1f, .1f, 1f);
-			gl.glTranslatef(JTEngine.playerBankPosX, 4.5f, 0f);
+			gl.glTranslatef(JTEngine.playerBankPosX, 3f, 0f);
 			gl.glMatrixMode(GL10.GL_TEXTURE);
 			gl.glLoadIdentity();
-			gl.glTranslatef(1 / 3f, 0f, 0.0f);
+			gl.glTranslatef(2 / 5f, 0f, 0.0f);
 			player1.draw(gl);
 			gl.glPopMatrix();
 			gl.glLoadIdentity();
@@ -140,9 +165,12 @@ public class JTGameRenderer implements Renderer {
 		gl.glClearDepthf(1.0f);
 		gl.glEnable(GL10.GL_DEPTH_TEST);
 		gl.glDepthFunc(GL10.GL_LEQUAL);
-//		/** activate blending feature */
+		// /** activate blending feature */
 		// gl.glEnable(GL10.GL_BLEND);
 		// gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE);
+
+		gl.glEnable(GL10.GL_BLEND);
+		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 
 		background.loadTexture(gl, JTEngine.BACKGROUND_LAYER_ONE,
 				JTEngine.context);
