@@ -2,6 +2,7 @@ package com.maciej.imiela.just.tilt.model;
 
 import android.content.Context;
 import android.content.Intent;
+import android.view.Display;
 import android.view.View;
 
 import com.maciej.imiela.just.tilt.controller.R;
@@ -14,8 +15,8 @@ public class JTEngine {
 	public static final int GAME_THREAD_FPS_SLEEP = (1000 / 60);
 	/** Constants that will be essential to use music */
 	public static final int SPLAH_SCREEN_MUSIC = R.raw.background_music_by_setuniman;
-	public static final int R_VOLUME = 100;
-	public static final int L_VOLUME = 100;
+	public static final int R_VOLUME = 0;
+	public static final int L_VOLUME = 0;
 	public static final boolean LOOP_BACKGRAND_MUSIC = true;
 	/** constants that are essentials to draw background */
 	public static final int BACKGROUND_LAYER_ONE = R.drawable.jt_background1;
@@ -26,6 +27,7 @@ public class JTEngine {
 	public static Context context; // hold the thread that is playing the music
 	// public static boolean isPlayingMusic = false;
 	public static Thread musicThread;
+	public static Display display;
 	/** move the good character */
 	public static int playerFlightAction = 0; // check the stae of the goodGuy
 	public static final int PLAYER_SHIP = R.drawable.good_guy;
