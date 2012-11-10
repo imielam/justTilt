@@ -1,19 +1,30 @@
 package com.maciej.imiela.just.tilt.controller;
 
+import java.util.ArrayList;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.opengl.GLSurfaceView.Renderer;
+import android.util.Log;
 
 import com.maciej.imiela.just.tilt.model.JTBackground;
+import com.maciej.imiela.just.tilt.model.JTEnemy;
 import com.maciej.imiela.just.tilt.model.JTEngine;
 import com.maciej.imiela.just.tilt.model.JTGoodGuy;
+import com.maciej.imiela.just.tilt.model.JTTextures;
 
 public class JTGameRenderer implements Renderer {
 
 	private JTBackground background = new JTBackground();
 	private JTBackground backgroung1 = new JTBackground();
 	private JTGoodGuy player1 = new JTGoodGuy();
+
+	private ArrayList<JTEnemy> enemies = new ArrayList<JTEnemy>();
+	// private JTEnemy[] enemies = new JTEnemy[JTEngine.TOTAL_INTERCEPTORS
+	// + JTEngine.TOTAL_SCOUTS + JTEngine.TOTAL_WARSHIPS - 1];
+	private JTTextures textureLoader;
+	private int[] spriteSheets = new int[2];
 
 	private int goodGuyBankFrames = 0;
 	private long loopStart = 0;
@@ -38,15 +49,149 @@ public class JTGameRenderer implements Renderer {
 		scrollBackground1(gl);
 		scrollBackground2(gl);
 		movePlayer1(gl);
+		moveEnemy(gl);
 
 		// All other game drawing will be called here
-
-		// gl.glEnable(GL10.GL_BLEND);
-		// gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE);
 
 		loopEnd = System.currentTimeMillis();
 		loopRunTime = ((loopEnd - loopStart));
 
+	}
+
+	public void onSurfaceChanged(GL10 gl, int width, int height) {
+		gl.glViewport(0, 0, width, height);
+
+		gl.glMatrixMode(GL10.GL_PROJECTION);
+		gl.glLoadIdentity();
+		gl.glOrthof(0f, 1f, 0f, 1f, -1f, 1f);
+
+	}
+
+	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+		initializeInterceptors();
+		initializeScouts();
+		initializeWarships();
+		textureLoader = new JTTextures(gl);
+		spriteSheets = textureLoader.loadTexture(gl, JTEngine.CHARACTER_SHEET,
+				JTEngine.context, 1);
+
+		/** enabling texture mapping */
+		gl.glEnable(GL10.GL_TEXTURE_2D);
+		/** inform openGL to test depth of every object onn the surface */
+		gl.glClearDepthf(1.0f);
+		gl.glEnable(GL10.GL_DEPTH_TEST);
+		gl.glDepthFunc(GL10.GL_LEQUAL);
+		// /** activate blending feature */
+		 gl.glEnable(GL10.GL_BLEND);
+//		 gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE);
+
+		gl.glEnable(GL10.GL_BLEND);
+		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+
+		background.loadTexture(gl, JTEngine.BACKGROUND_LAYER_ONE,
+				JTEngine.context);
+		backgroung1.loadTexture(gl, JTEngine.BACKGROUND_LAYER_TWO,
+				JTEngine.context);
+		// player1.loadTexture(gl, JTEngine.PLAYER_SHIP, JTEngine.context);
+		// TODO load game textures
+	}
+
+	private void initializeInterceptors() {
+		for (int x = 0; x < JTEngine.TOTAL_INTERCEPTORS; x++) {
+			JTEnemy interceptor = new JTEnemy(JTEngine.TYPE_INTERCEPTOR,
+					JTEngine.ATTACK_RANDOM);
+			enemies.add(interceptor);
+
+		}
+	}
+
+	private void initializeScouts() {
+		for (int x = 0; x < JTEngine.TOTAL_SCOUTS; x++) {
+			JTEnemy interceptor;
+			if (x >= JTEngine.TOTAL_SCOUTS / 2) {
+				interceptor = new JTEnemy(JTEngine.TYPE_SCOUT,
+						JTEngine.ATTACK_RIGHT);
+			} else {
+				interceptor = new JTEnemy(JTEngine.TYPE_SCOUT,
+						JTEngine.ATTACK_LEFT);
+			}
+			enemies.add(interceptor);
+		}
+	}
+
+	private void initializeWarships() {
+		for (int x = 0; x < JTEngine.TOTAL_WARSHIPS; x++) {
+			JTEnemy interceptor = new JTEnemy(JTEngine.TOTAL_WARSHIPS,
+					JTEngine.ATTACK_RANDOM);
+			enemies.add(interceptor);
+		}
+	}
+
+	private void moveEnemy(GL10 gl) {
+		for (JTEnemy enemy : enemies) {
+			if (!enemy.isDestroyed) {
+				switch (enemy.enemyType) {
+				case JTEngine.TYPE_INTERCEPTOR:
+					if (enemy.posY < -0.1) {
+						enemy.init();
+					}
+					gl.glMatrixMode(GL10.GL_MODELVIEW);
+					gl.glLoadIdentity();
+					gl.glPushMatrix();
+					gl.glScalef(.1f, .1f, 1f);
+					if (!enemy.isLockedOn && enemy.posY >= 7) {
+						enemy.posY -= JTEngine.INTERCEPTOR_SPEED;
+					} else {
+						// if (enemy.isLockedOn) {
+						enemy.lockOnPosX = JTEngine.playerBankPosX;
+						enemy.lockOnPosY = JTEngine.playerBankPosY;
+						enemy.isLockedOn = true;
+						// Log.v("posx", Float.valueOf(enemy.posX).toString());
+						// Log.v("posy", Float.valueOf(enemy.posY).toString());
+						// Log.v("lockposx", Float.valueOf(enemy.lockOnPosX)
+						// .toString());
+						// Log.v("lockposy", Float.valueOf(enemy.lockOnPosY)
+						// .toString());
+						// enemy.incrementXToTarget =
+						// (float) ((enemy.lockOnPosX - enemy.posX )/
+						// (enemy.posY /
+						// (JTEngine.INTERCEPTOR_SPEED * 4)));
+						// ((JTEngine.INTERCEPTOR_SPEED * 4) - enemy.posY) *
+						// (enemy.lockOnPosX - enemy.posX) /
+						// (enemy.lockOnPosY - enemy.posY);
+
+						
+						// Log.v("incrementXToTarget",
+						// Float.valueOf(enemy.posX).toString());
+						// } else {
+//						enemy.posX -= enemy.incrementXToTarget;
+						// }
+						if (enemy.posY - enemy.lockOnPosY > 0.1f) {
+							enemy.posX = enemy.incrementToX();
+							enemy.posY -= (JTEngine.INTERCEPTOR_SPEED * 4);
+						} else if (enemy.posY - enemy.lockOnPosY < -0.1f){
+							enemy.posX = enemy.decrementToX();
+							enemy.posY += (JTEngine.INTERCEPTOR_SPEED * 4);
+//						} else {
+//							enemy.posY += (JTEngine.INTERCEPTOR_SPEED * 4);
+						}
+					}
+					gl.glTranslatef(enemy.posX, enemy.posY, 0f);
+					gl.glMatrixMode(GL10.GL_TEXTURE);
+					gl.glLoadIdentity();
+					gl.glTranslatef(0f, 0f, 0.0f);
+					enemy.draw(gl, spriteSheets);
+					gl.glPopMatrix();
+					gl.glLoadIdentity();
+
+					break;
+				case JTEngine.TYPE_SCOUT:
+					break;
+				case JTEngine.TYPE_WARSHIP:
+					break;
+				}
+			}
+		}
 	}
 
 	private void movePlayer1(GL10 gl) {
@@ -79,7 +224,7 @@ public class JTGameRenderer implements Renderer {
 						JTEngine.playerBankPosY, 0);
 				gl.glMatrixMode(GL10.GL_TEXTURE);
 				gl.glLoadIdentity();
-				gl.glTranslatef(1 / 5f, 0.0f, 0.0f);
+				gl.glTranslatef(1 / 5f, 0.5f, 0.0f);
 				goodGuyBankFrames += 1;
 			} else if (this.goodGuyBankFrames >= JTEngine.PLAYER_FRAMES_BETWEEN_ANI
 					&& JTEngine.playerBankPosX > 0) {
@@ -88,17 +233,17 @@ public class JTGameRenderer implements Renderer {
 						JTEngine.playerBankPosY, 0f);
 				gl.glMatrixMode(GL10.GL_TEXTURE);
 				gl.glLoadIdentity();
-				gl.glTranslatef(0 / 5f, 0, 0);
+				gl.glTranslatef(0 / 5f, 0.5f, 0);
 			} else {
 				gl.glTranslatef(JTEngine.playerBankPosX,
 						JTEngine.playerBankPosY, 0f);
 				gl.glMatrixMode(GL10.GL_TEXTURE);
 				gl.glLoadIdentity();
-				gl.glTranslatef(2 / 5f, 0f, 0.0f);
+				gl.glTranslatef(2 / 5f, 0.5f, 0.0f);
 			}
-			player1.draw(gl);
-			gl.glPopMatrix();
-			gl.glLoadIdentity();
+			// player1.draw(gl, spriteSheets);
+			// gl.glPopMatrix();
+			// gl.glLoadIdentity();
 			break;
 		case JTEngine.PLAYER_BANK_RIGHT_1:
 			gl.glMatrixMode(GL10.GL_MODELVIEW);
@@ -112,7 +257,7 @@ public class JTGameRenderer implements Renderer {
 						JTEngine.playerBankPosY, 0f);
 				gl.glMatrixMode(GL10.GL_TEXTURE);
 				gl.glLoadIdentity();
-				gl.glTranslatef(3 / 5f, 0.0f, 0.0f);
+				gl.glTranslatef(3 / 5f, 0.5f, 0.0f);
 				goodGuyBankFrames += 1;
 			} else if (goodGuyBankFrames >= JTEngine.PLAYER_FRAMES_BETWEEN_ANI
 					&& JTEngine.playerBankPosX < 9) {
@@ -121,18 +266,18 @@ public class JTGameRenderer implements Renderer {
 						JTEngine.playerBankPosY, 0f);
 				gl.glMatrixMode(GL10.GL_TEXTURE);
 				gl.glLoadIdentity();
-				gl.glTranslatef(4 / 5f, 0.0f, 0.0f);
+				gl.glTranslatef(4 / 5f, 0.5f, 0.0f);
 
 			} else {
 				gl.glTranslatef(JTEngine.playerBankPosX,
 						JTEngine.playerBankPosY, 0f);
 				gl.glMatrixMode(GL10.GL_TEXTURE);
 				gl.glLoadIdentity();
-				gl.glTranslatef(2 / 5f, 0f, 0.0f);
+				gl.glTranslatef(2 / 5f, 0.5f, 0.0f);
 			}
-			player1.draw(gl);
-			gl.glPopMatrix();
-			gl.glLoadIdentity();
+			// player1.draw(gl);
+			// gl.glPopMatrix();
+			// gl.glLoadIdentity();
 			break;
 		case JTEngine.PLAYER_RELEASE:
 			gl.glMatrixMode(GL10.GL_MODELVIEW);
@@ -143,10 +288,10 @@ public class JTGameRenderer implements Renderer {
 					0f);
 			gl.glMatrixMode(GL10.GL_TEXTURE);
 			gl.glLoadIdentity();
-			gl.glTranslatef(2 / 5f, 0f, 0.0f);
-			player1.draw(gl);
-			gl.glPopMatrix();
-			gl.glLoadIdentity();
+			gl.glTranslatef(2 / 5f, 0.5f, 0.0f);
+			// player1.draw(gl);
+			// gl.glPopMatrix();
+			// gl.glLoadIdentity();
 			goodGuyBankFrames += 1;
 
 		default:
@@ -158,13 +303,16 @@ public class JTGameRenderer implements Renderer {
 					0f);
 			gl.glMatrixMode(GL10.GL_TEXTURE);
 			gl.glLoadIdentity();
-			gl.glTranslatef(2 / 5f, 0f, 0.0f);
-			player1.draw(gl);
-			gl.glPopMatrix();
-			gl.glLoadIdentity();
+			gl.glTranslatef(2 / 5f, 0.5f, 0.0f);
+			// player1.draw(gl);
+			// gl.glPopMatrix();
+			// gl.glLoadIdentity();
 
 			break;
 		}
+		player1.draw(gl, spriteSheets);
+		gl.glPopMatrix();
+		gl.glLoadIdentity();
 
 	}
 
@@ -214,37 +362,6 @@ public class JTGameRenderer implements Renderer {
 		gl.glPopMatrix();
 		bgScroll2 += JTEngine.SCROLL_BACKGROUND_2;
 		gl.glLoadIdentity();
-	}
-
-	public void onSurfaceChanged(GL10 gl, int width, int height) {
-		gl.glViewport(0, 0, width, height);
-
-		gl.glMatrixMode(GL10.GL_PROJECTION);
-		gl.glLoadIdentity();
-		gl.glOrthof(0f, 1f, 0f, 1f, -1f, 1f);
-
-	}
-
-	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-		/** enabling texture mapping */
-		gl.glEnable(GL10.GL_TEXTURE_2D);
-		/** inform openGL to test depth of every object onn the surface */
-		gl.glClearDepthf(1.0f);
-		gl.glEnable(GL10.GL_DEPTH_TEST);
-		gl.glDepthFunc(GL10.GL_LEQUAL);
-		// /** activate blending feature */
-		// gl.glEnable(GL10.GL_BLEND);
-		// gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE);
-
-		gl.glEnable(GL10.GL_BLEND);
-		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-
-		background.loadTexture(gl, JTEngine.BACKGROUND_LAYER_ONE,
-				JTEngine.context);
-		backgroung1.loadTexture(gl, JTEngine.BACKGROUND_LAYER_TWO,
-				JTEngine.context);
-		player1.loadTexture(gl, JTEngine.PLAYER_SHIP, JTEngine.context);
-		// TODO load game textures
 	}
 
 }

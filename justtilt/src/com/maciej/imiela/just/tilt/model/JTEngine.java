@@ -8,7 +8,7 @@ import android.view.View;
 import com.maciej.imiela.just.tilt.controller.R;
 
 public class JTEngine {
-	/**Constant to use accelerometer*/
+	/** Constant to use accelerometer */
 	public static final int ACCELEROMETER_CHANGE_ACCEPTANCE = 1;
 	public static final int ACCELEROMETER_CHANGE_BEHAVIOR = 1;
 	/** Constants that will be used in the game */
@@ -34,6 +34,7 @@ public class JTEngine {
 	/** move the good character */
 	public static int playerFlightAction = 0; // check the stae of the goodGuy
 	public static int playerFlightActionY = 0;
+	public static int CHARACTER_SHEET = R.drawable.character_sprite;
 	public static final int PLAYER_SHIP = R.drawable.good_guy;
 	public static final int PLAYER_BANK_LEFT_1 = 1;
 	public static final int PLAYER_RELEASE = 3;
@@ -43,11 +44,33 @@ public class JTEngine {
 	public static final float PLAYER_BANK_SPEED = .1f;
 	public static float playerBankPosX = 4.5f;
 	public static float playerBankPosY = 3f;
+	/** Enemy AI */
+	public static int TOTAL_INTERCEPTORS = 10;
+	public static int TOTAL_SCOUTS = 0;//15;
+	public static int TOTAL_WARSHIPS = 0;//5;
+	public static float INTERCEPTOR_SPEED = SCROLL_BACKGROUND_1 * 4f;
+	public static float SCOUT_SPEED = SCROLL_BACKGROUND_1 * 6f;
+	public static float WARSHIP_SPEED = SCROLL_BACKGROUND_2 * 4f;
+	public static final int TYPE_INTERCEPTOR = 1;
+	public static final int TYPE_SCOUT = 2;
+	public static final int TYPE_WARSHIP = 3;
+	public static final int ATTACK_RANDOM = 0;
+	public static final int ATTACK_RIGHT = 1;
+	public static final int ATTACK_LEFT = 2;
+	public static final float BEZIER_X_1 = 0f;
+	public static final float BEZIER_X_2 = 1f;
+	public static final float BEZIER_X_3 = 2.5f;
+	public static final float BEZIER_X_4 = 3f;
+	public static final float BEZIER_Y_1 = 0f;
+	public static final float BEZIER_Y_2 = 2.4f;
+	public static final float BEZIER_Y_3 = 1.5f;
+	public static final float BEZIER_Y_4 = 2.6f;
+
 	/*
 	 * constant that describe how often the sprite is animated (9 animation of
 	 * the background for each sprite)
 	 */
-	public static final int PLAYER_FRAMES_BETWEEN_ANI = 9; 
+	public static final int PLAYER_FRAMES_BETWEEN_ANI = 9;
 
 	/**
 	 * Method that is called when the Exit button is pressed. Perform any
@@ -63,9 +86,9 @@ public class JTEngine {
 			context.stopService(bgMusic);
 			// musicThread.stop(); //stop shouldn't be used, think of something
 			// else.
-			musicThread.interrupt(); // I think it works better, but I should
-										// still try to find a better way to
-										// implement this.
+			// TODO I think it works better, but I should still try to find a
+			// better way to implement this.
+			musicThread.interrupt();
 
 			return true;
 		} catch (Exception e) {
