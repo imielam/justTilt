@@ -8,6 +8,9 @@ import android.view.View;
 import com.maciej.imiela.just.tilt.controller.R;
 
 public class JTEngine {
+	/**Constant to use accelerometer*/
+	public static final int ACCELEROMETER_CHANGE_ACCEPTANCE = 1;
+	public static final int ACCELEROMETER_CHANGE_BEHAVIOR = 1;
 	/** Constants that will be used in the game */
 	public static final int GAME_THREAD_DELAY = 4000;
 	public static final int MENU_BUTTON_ALPHA = 0;
@@ -30,12 +33,16 @@ public class JTEngine {
 	public static Display display;
 	/** move the good character */
 	public static int playerFlightAction = 0; // check the stae of the goodGuy
+	public static int playerFlightActionY = 0;
 	public static final int PLAYER_SHIP = R.drawable.good_guy;
 	public static final int PLAYER_BANK_LEFT_1 = 1;
 	public static final int PLAYER_RELEASE = 3;
 	public static final int PLAYER_BANK_RIGHT_1 = 4;
+	public static final int PLAYER_BANK_FORWARD = 1;
+	public static final int PLAYER_BANK_BACKWARD = 4;
 	public static final float PLAYER_BANK_SPEED = .1f;
 	public static float playerBankPosX = 4.5f;
+	public static float playerBankPosY = 3f;
 	/*
 	 * constant that describe how often the sprite is animated (9 animation of
 	 * the background for each sprite)

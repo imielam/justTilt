@@ -14,11 +14,11 @@ public class JTGameRenderer implements Renderer {
 	private JTBackground background = new JTBackground();
 	private JTBackground backgroung1 = new JTBackground();
 	private JTGoodGuy player1 = new JTGoodGuy();
-	
+
 	private int goodGuyBankFrames = 0;
 	private long loopStart = 0;
 	private long loopEnd = 0;
-	private long loopRunTime = 0 ;
+	private long loopRunTime = 0;
 
 	private float bgScroll1;
 	private float bgScroll2;
@@ -26,8 +26,9 @@ public class JTGameRenderer implements Renderer {
 	public void onDrawFrame(GL10 gl) {
 		loopStart = System.currentTimeMillis();
 		try {
-			if (loopRunTime < JTEngine.GAME_THREAD_FPS_SLEEP){
-			Thread.sleep(JTEngine.GAME_THREAD_FPS_SLEEP);}
+			if (loopRunTime < JTEngine.GAME_THREAD_FPS_SLEEP) {
+				Thread.sleep(JTEngine.GAME_THREAD_FPS_SLEEP);
+			}
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -37,29 +38,45 @@ public class JTGameRenderer implements Renderer {
 		scrollBackground1(gl);
 		scrollBackground2(gl);
 		movePlayer1(gl);
-		
-		//All other game drawing will be called here
-		
-		
+
+		// All other game drawing will be called here
+
 		// gl.glEnable(GL10.GL_BLEND);
 		// gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE);
-		
+
 		loopEnd = System.currentTimeMillis();
 		loopRunTime = ((loopEnd - loopStart));
 
 	}
 
 	private void movePlayer1(GL10 gl) {
+		switch (JTEngine.playerFlightActionY) {
+		case JTEngine.PLAYER_BANK_FORWARD:
+			if (JTEngine.playerBankPosY < 9) {
+				JTEngine.playerBankPosY += JTEngine.PLAYER_BANK_SPEED;
+			}
+			break;
+		case JTEngine.PLAYER_BANK_BACKWARD:
+			if (JTEngine.playerBankPosY > 0) {
+				JTEngine.playerBankPosY -= JTEngine.PLAYER_BANK_SPEED;
+			}
+			break;
+		default:
+
+		}
+
 		switch (JTEngine.playerFlightAction) {
 		case JTEngine.PLAYER_BANK_LEFT_1:
 			gl.glMatrixMode(GL10.GL_MODELVIEW);
 			gl.glLoadIdentity();
 			gl.glPushMatrix();
 			gl.glScalef(.1f, .1f, 1f);
+
 			if (this.goodGuyBankFrames < JTEngine.PLAYER_FRAMES_BETWEEN_ANI
 					&& JTEngine.playerBankPosX > 0) {
 				JTEngine.playerBankPosX -= JTEngine.PLAYER_BANK_SPEED;
-				gl.glTranslatef(JTEngine.playerBankPosX, 3f, 0);
+				gl.glTranslatef(JTEngine.playerBankPosX,
+						JTEngine.playerBankPosY, 0);
 				gl.glMatrixMode(GL10.GL_TEXTURE);
 				gl.glLoadIdentity();
 				gl.glTranslatef(1 / 5f, 0.0f, 0.0f);
@@ -67,12 +84,14 @@ public class JTGameRenderer implements Renderer {
 			} else if (this.goodGuyBankFrames >= JTEngine.PLAYER_FRAMES_BETWEEN_ANI
 					&& JTEngine.playerBankPosX > 0) {
 				JTEngine.playerBankPosX -= JTEngine.PLAYER_BANK_SPEED;
-				gl.glTranslatef(JTEngine.playerBankPosX, 3f, 0f);
+				gl.glTranslatef(JTEngine.playerBankPosX,
+						JTEngine.playerBankPosY, 0f);
 				gl.glMatrixMode(GL10.GL_TEXTURE);
 				gl.glLoadIdentity();
 				gl.glTranslatef(0 / 5f, 0, 0);
 			} else {
-				gl.glTranslatef(JTEngine.playerBankPosX, 3f, 0f);
+				gl.glTranslatef(JTEngine.playerBankPosX,
+						JTEngine.playerBankPosY, 0f);
 				gl.glMatrixMode(GL10.GL_TEXTURE);
 				gl.glLoadIdentity();
 				gl.glTranslatef(2 / 5f, 0f, 0.0f);
@@ -89,21 +108,24 @@ public class JTGameRenderer implements Renderer {
 			if (goodGuyBankFrames < JTEngine.PLAYER_FRAMES_BETWEEN_ANI
 					&& JTEngine.playerBankPosX < 9) {
 				JTEngine.playerBankPosX += JTEngine.PLAYER_BANK_SPEED;
-				gl.glTranslatef(JTEngine.playerBankPosX, 3f, 0f);
+				gl.glTranslatef(JTEngine.playerBankPosX,
+						JTEngine.playerBankPosY, 0f);
 				gl.glMatrixMode(GL10.GL_TEXTURE);
 				gl.glLoadIdentity();
 				gl.glTranslatef(3 / 5f, 0.0f, 0.0f);
 				goodGuyBankFrames += 1;
 			} else if (goodGuyBankFrames >= JTEngine.PLAYER_FRAMES_BETWEEN_ANI
-				&& JTEngine.playerBankPosX < 9) {
-					JTEngine.playerBankPosX += JTEngine.PLAYER_BANK_SPEED;
-					gl.glTranslatef(JTEngine.playerBankPosX, 3f, 0f);
-					gl.glMatrixMode(GL10.GL_TEXTURE);
-					gl.glLoadIdentity();
-					gl.glTranslatef(4 / 5f, 0.0f, 0.0f);
-				
+					&& JTEngine.playerBankPosX < 9) {
+				JTEngine.playerBankPosX += JTEngine.PLAYER_BANK_SPEED;
+				gl.glTranslatef(JTEngine.playerBankPosX,
+						JTEngine.playerBankPosY, 0f);
+				gl.glMatrixMode(GL10.GL_TEXTURE);
+				gl.glLoadIdentity();
+				gl.glTranslatef(4 / 5f, 0.0f, 0.0f);
+
 			} else {
-				gl.glTranslatef(JTEngine.playerBankPosX, 3f, 0f);
+				gl.glTranslatef(JTEngine.playerBankPosX,
+						JTEngine.playerBankPosY, 0f);
 				gl.glMatrixMode(GL10.GL_TEXTURE);
 				gl.glLoadIdentity();
 				gl.glTranslatef(2 / 5f, 0f, 0.0f);
@@ -117,7 +139,8 @@ public class JTGameRenderer implements Renderer {
 			gl.glLoadIdentity();
 			gl.glPushMatrix();
 			gl.glScalef(.1f, .1f, 1f);
-			gl.glTranslatef(JTEngine.playerBankPosX, 3f, 0f);
+			gl.glTranslatef(JTEngine.playerBankPosX, JTEngine.playerBankPosY,
+					0f);
 			gl.glMatrixMode(GL10.GL_TEXTURE);
 			gl.glLoadIdentity();
 			gl.glTranslatef(2 / 5f, 0f, 0.0f);
@@ -131,7 +154,8 @@ public class JTGameRenderer implements Renderer {
 			gl.glLoadIdentity();
 			gl.glPushMatrix();
 			gl.glScalef(.1f, .1f, 1f);
-			gl.glTranslatef(JTEngine.playerBankPosX, 3f, 0f);
+			gl.glTranslatef(JTEngine.playerBankPosX, JTEngine.playerBankPosY,
+					0f);
 			gl.glMatrixMode(GL10.GL_TEXTURE);
 			gl.glLoadIdentity();
 			gl.glTranslatef(2 / 5f, 0f, 0.0f);
