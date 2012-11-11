@@ -20,7 +20,7 @@ import com.maciej.imiela.just.tilt.model.JTWeapon;
 public class JTGameRenderer implements Renderer {
 
 	public static boolean fire = false;
-	
+
 	private JTBackground background = new JTBackground();
 	private JTBackground backgroung1 = new JTBackground();
 	private JTGoodGuy player1 = new JTGoodGuy();
@@ -30,7 +30,8 @@ public class JTGameRenderer implements Renderer {
 	// + JTEngine.TOTAL_SCOUTS + JTEngine.TOTAL_WARSHIPS - 1];
 	private JTTextures textureLoader;
 	private int[] spriteSheets = new int[2];
-	private List<JTWeapon> playerFire = new LinkedList<JTWeapon>();//new LinkedList<JTWeapon>();
+	private List<JTWeapon> playerFire = new LinkedList<JTWeapon>();// new
+																	// LinkedList<JTWeapon>();
 
 	private int goodGuyBankFrames = 0;
 	private long loopStart = 0;
@@ -56,6 +57,8 @@ public class JTGameRenderer implements Renderer {
 		scrollBackground2(gl);
 		movePlayer1(gl);
 		moveEnemy(gl);
+		
+		detectCollisions();
 
 		// All other game drawing will be called here
 
@@ -75,9 +78,9 @@ public class JTGameRenderer implements Renderer {
 
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		initializeInterceptors();
-//		initializePlayerWeapons();
-//		initializeScouts();
-//		initializeWarships();
+		// initializePlayerWeapons();
+		// initializeScouts();
+		// initializeWarships();
 		textureLoader = new JTTextures(gl);
 		spriteSheets = textureLoader.loadTexture(gl, JTEngine.CHARACTER_SHEET,
 				JTEngine.context, 1);
@@ -113,22 +116,57 @@ public class JTGameRenderer implements Renderer {
 		}
 	}
 
-	private void initializePlayerWeapons() {
-		for (int x = 0; x < 10; x++) {
-			playerFire.add(new JTWeapon());
+	// private void initializePlayerWeapons() {
+	// for (int x = 0; x < 10; x++) {
+	// playerFire.add(new JTWeapon());
+	// }
+	// playerFire.get(0).shotFired = true;
+	// playerFire.get(0).posX = JTEngine.playerBankPosX;
+	// playerFire.get(0).posY = JTEngine.playerBankPosY + 0.25f;
+	// }
+
+	private void detectCollisions() {
+		Iterator<JTWeapon> w = playerFire.iterator();
+		while (w.hasNext()){
+			JTWeapon fire = w.next();
+			Iterator<JTEnemy> e = enemies.iterator();
+			while (e.hasNext()) {
+				JTEnemy enemy = e.next();
+				if (!enemy.isDestroyed && enemy.posY < 10.25f) {
+					if ((fire.posY >= enemy.posY - 1 && fire.posY <= enemy.posY)
+							&& (fire.posX <= enemy.posX + 1 && fire.posX >= enemy.posX - 1)) {
+//						w.remove();
+						enemy.applyDamage();
+						if (enemy.isDestroyed){
+							e.remove();
+						}
+					}
+				}
+			}
 		}
-		playerFire.get(0).shotFired = true;
-		playerFire.get(0).posX = JTEngine.playerBankPosX;
-		playerFire.get(0).posY = JTEngine.playerBankPosY + 0.25f;
+		
+		
+		
+		
+//		for (JTWeapon fire : playerFire) {
+//			for (JTEnemy enemy : enemies) {
+//				if (!enemy.isDestroyed && enemy.posY < 10.25f) {
+//					if ((fire.posY >= enemy.posY - 1 && fire.posY <= enemy.posY)
+//							&& (fire.posX <= enemy.posX + 1 && fire.posX >= enemy.posX - 1)) {
+//
+//					}
+//				}
+//			}
+//		}
 	}
 
 	private synchronized void firePlayerWeapon(GL10 gl) {
-		if (fire){
+		if (fire) {
 			playerFire.add(new JTWeapon());
 			fire = false;
 		}
 		Iterator<JTWeapon> itr = playerFire.iterator();
-		while (itr.hasNext()){
+		while (itr.hasNext()) {
 			JTWeapon fire = itr.next();
 			if (fire.shotFired) {
 				if (fire.posY > 10.25) {

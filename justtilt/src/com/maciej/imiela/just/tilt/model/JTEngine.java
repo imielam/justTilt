@@ -45,7 +45,7 @@ public class JTEngine {
 	public static float playerBankPosX = 4.5f;
 	public static float playerBankPosY = 3f;
 	/** Enemy AI */
-	public static int TOTAL_INTERCEPTORS = 10;
+	public static int TOTAL_INTERCEPTORS = 100;
 	public static int TOTAL_SCOUTS = 0;//15;
 	public static int TOTAL_WARSHIPS = 0;//5;
 	public static float INTERCEPTOR_SPEED = SCROLL_BACKGROUND_1 * 4f;

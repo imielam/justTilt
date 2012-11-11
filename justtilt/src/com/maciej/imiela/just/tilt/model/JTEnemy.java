@@ -8,6 +8,7 @@ import java.util.Random;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.util.Log;
+
 //TODO Change the class to extend class JTDrawable(chreate it first)
 public class JTEnemy {
 
@@ -22,7 +23,8 @@ public class JTEnemy {
 											// potential target
 
 	public int attackDirection = 0; // the attack direction of the ship
-	public boolean isDestroyed = false; // has this ship been destroyed?
+	public boolean isDestroyed = false; // has this ship been destroyed?+
+	private int damage = 0;
 	public int enemyType = 0; // what type of enemy is this?
 
 	public boolean isLockedOn = false; // had the enemy locked on to a target?
@@ -37,12 +39,12 @@ public class JTEnemy {
 	private float vertices[] = { 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
 			1.0f, 0.0f, 0.0f, 1.0f, 0.0f, };
 	private float texture[] = { 0.0f, 0.0f, //
-			1/5f, 0.0f, //
-			1/5f, 0.5f, //
+			1 / 5f, 0.0f, //
+			1 / 5f, 0.5f, //
 			0.0f, 0.5f, };
 	private byte indices[] = { 0, 1, 2, 0, 2, 3, };
 
-	public void init(){
+	public void init() {
 		posY = (randomPos.nextFloat() * 9) + 9;
 		switch (attackDirection) {
 		case JTEngine.ATTACK_LEFT:
@@ -60,23 +62,23 @@ public class JTEnemy {
 		lockOnPosY = 0;
 		isLockedOn = false;
 	}
-	
+
 	public JTEnemy(int type, int direction) {
 		enemyType = type;
 		attackDirection = direction;
-//		posY = (randomPos.nextFloat() * 9) + 9;
-//		switch (attackDirection) {
-//		case JTEngine.ATTACK_LEFT:
-//			posX = 0;
-//			break;
-//		case JTEngine.ATTACK_RANDOM:
-//			posX = randomPos.nextFloat() * 9;
-//			break;
-//		case JTEngine.ATTACK_RIGHT:
-//			posX = 9;
-//			break;
-//		}
-//		posT = JTEngine.SCOUT_SPEED;
+		// posY = (randomPos.nextFloat() * 9) + 9;
+		// switch (attackDirection) {
+		// case JTEngine.ATTACK_LEFT:
+		// posX = 0;
+		// break;
+		// case JTEngine.ATTACK_RANDOM:
+		// posX = randomPos.nextFloat() * 9;
+		// break;
+		// case JTEngine.ATTACK_RIGHT:
+		// posX = 9;
+		// break;
+		// }
+		// posT = JTEngine.SCOUT_SPEED;
 		this.init();
 
 		ByteBuffer byteBuf = ByteBuffer.allocateDirect(vertices.length * 4);
@@ -93,37 +95,44 @@ public class JTEnemy {
 		indexBuffer.put(indices);
 		indexBuffer.position(0);
 	}
-	
+
 	public float incrementToX() {
-//		return ((JTEngine.INTERCEPTOR_SPEED * 4) - posY - lockOnPosY) *  (lockOnPosX - posX) / (-lockOnPosY + posY);
-		return (posX - lockOnPosX)*(posY - JTEngine.INTERCEPTOR_SPEED * 4 - lockOnPosY)/(posY - lockOnPosY) + lockOnPosX;
+		// return ((JTEngine.INTERCEPTOR_SPEED * 4) - posY - lockOnPosY) *
+		// (lockOnPosX - posX) / (-lockOnPosY + posY);
+		return (posX - lockOnPosX)
+				* (posY - JTEngine.INTERCEPTOR_SPEED * 4 - lockOnPosY)
+				/ (posY - lockOnPosY) + lockOnPosX;
 	}
-	
+
 	public float decrementToX() {
-		return(lockOnPosX - posX)*(JTEngine.INTERCEPTOR_SPEED * 4) / (lockOnPosY - posY) + posX;
+		return (lockOnPosX - posX) * (JTEngine.INTERCEPTOR_SPEED * 4)
+				/ (lockOnPosY - posY) + posX;
 	}
 
-	public float getNextScoutX() {
-		if (attackDirection == JTEngine.ATTACK_LEFT) {
-			return (float) ((JTEngine.BEZIER_X_4 * (posT * posT * posT))
-					+ (JTEngine.BEZIER_X_3 * 3 * (posT * posT) * (1 - posT))
-					+ (JTEngine.BEZIER_X_2 * 3 * posT * ((1 - posT) * (1 - posT))) + (JTEngine.BEZIER_X_1 * ((1 - posT)
-					* (1 - posT) * (1 - posT))));
-		} else {
-			return (float) ((JTEngine.BEZIER_X_1 * (posT * posT * posT))
-					+ (JTEngine.BEZIER_X_2 * 3 * (posT * posT) * (1 - posT))
-					+ (JTEngine.BEZIER_X_3 * 3 * posT * ((1 - posT) * (1 - posT))) + (JTEngine.BEZIER_X_4 * ((1 - posT)
-					* (1 - posT) * (1 - posT))));
-		}
-	}
+	// public float getNextScoutX() {
+	// if (attackDirection == JTEngine.ATTACK_LEFT) {
+	// return (float) ((JTEngine.BEZIER_X_4 * (posT * posT * posT))
+	// + (JTEngine.BEZIER_X_3 * 3 * (posT * posT) * (1 - posT))
+	// + (JTEngine.BEZIER_X_2 * 3 * posT * ((1 - posT) * (1 - posT))) +
+	// (JTEngine.BEZIER_X_1 * ((1 - posT)
+	// * (1 - posT) * (1 - posT))));
+	// } else {
+	// return (float) ((JTEngine.BEZIER_X_1 * (posT * posT * posT))
+	// + (JTEngine.BEZIER_X_2 * 3 * (posT * posT) * (1 - posT))
+	// + (JTEngine.BEZIER_X_3 * 3 * posT * ((1 - posT) * (1 - posT))) +
+	// (JTEngine.BEZIER_X_4 * ((1 - posT)
+	// * (1 - posT) * (1 - posT))));
+	// }
+	// }
+	//
+	// public float getNextScoutY() {
+	// return (float) ((JTEngine.BEZIER_Y_1 * (posT * posT * posT))
+	// + (JTEngine.BEZIER_Y_2 * 3 * (posT * posT) * (1 - posT))
+	// + (JTEngine.BEZIER_Y_3 * 3 * posT * ((1 - posT) * (1 - posT))) +
+	// (JTEngine.BEZIER_Y_4 * ((1 - posT)
+	// * (1 - posT) * (1 - posT))));
+	// }
 
-	public float getNextScoutY() {
-		return (float) ((JTEngine.BEZIER_Y_1 * (posT * posT * posT))
-				+ (JTEngine.BEZIER_Y_2 * 3 * (posT * posT) * (1 - posT))
-				+ (JTEngine.BEZIER_Y_3 * 3 * posT * ((1 - posT) * (1 - posT))) + (JTEngine.BEZIER_Y_4 * ((1 - posT)
-				* (1 - posT) * (1 - posT))));
-	}
-	
 	public void draw(GL10 gl, int[] spriteSheet) {
 
 		gl.glBindTexture(GL10.GL_TEXTURE_2D, spriteSheet[0]);
@@ -143,5 +152,26 @@ public class JTEnemy {
 		gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
 		gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 		gl.glDisable(GL10.GL_CULL_FACE);
+	}
+
+	public void applyDamage() {
+		damage++;
+		switch (enemyType) {
+		case JTEngine.TYPE_INTERCEPTOR:
+			if (damage == JTEngine.INTERCEPTOR_SHIELDS) {
+				isDestroyed = true;
+			}
+			break;
+		// case JTEngine.TYPE_SCOUT:
+		// if (damage == JTEngine.SCOUT_SHIELDS){
+		// isDestroyed = true;
+		// }
+		// break;
+		// case JTEngine.TYPE_WARSHIP:
+		// if (damage == JTEngine.WARSHIP_SHIELDS){
+		// isDestroyed = true;
+		// }
+		// break;
+		}
 	}
 }
