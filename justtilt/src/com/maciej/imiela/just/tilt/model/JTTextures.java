@@ -11,7 +11,7 @@ import android.graphics.BitmapFactory;
 import android.opengl.GLUtils;
 
 public class JTTextures {
-	private int[] textures = new int[1];
+	private int[] textures = new int[2];
 
 	public JTTextures(GL10 gl) {
 		gl.glGenTextures(1, textures, 0);

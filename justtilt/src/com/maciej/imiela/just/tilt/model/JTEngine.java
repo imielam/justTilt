@@ -65,6 +65,13 @@ public class JTEngine {
 	public static final float BEZIER_Y_2 = 2.4f;
 	public static final float BEZIER_Y_3 = 1.5f;
 	public static final float BEZIER_Y_4 = 2.6f;
+	/** weapons */
+	public static final int WEAPONS_SHEET = R.drawable.weapons_sprite;
+	public static final int PLAYER_SHIELDS = 5;
+//	public static final int SCOUT_SHIELDS = 3;
+	public static final int INTERCEPTOR_SHIELDS = 1;
+//	public static final int WARSHIP_SHIELDS = 5;
+	public static final float PLAYER_BULLET_SPEED = .125f;
 
 	/*
 	 * constant that describe how often the sprite is animated (9 animation of

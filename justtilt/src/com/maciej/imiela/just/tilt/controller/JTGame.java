@@ -45,8 +45,8 @@ public class JTGame extends Activity implements SensorEventListener {
 		sm.unregisterListener(this);
 	}
 
-//	@Override
-//	public boolean onTouchEvent(MotionEvent event) {
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
 //		float x = event.getX();
 //		float y = event.getY();
 //		Rect display = new Rect();
@@ -57,7 +57,7 @@ public class JTGame extends Activity implements SensorEventListener {
 //		int height = display.height() / 4;
 //		int playableArea = display.height() - height;
 //		if (y > playableArea) {
-//			switch (event.getAction()) {
+			switch (event.getAction()) {
 //			case MotionEvent.ACTION_DOWN:
 //				if (x < display.width() / 2) {
 //					JTEngine.playerFlightAction = JTEngine.PLAYER_BANK_LEFT_1;
@@ -65,14 +65,15 @@ public class JTGame extends Activity implements SensorEventListener {
 //					JTEngine.playerFlightAction = JTEngine.PLAYER_BANK_RIGHT_1;
 //				}
 //				break;
-//			case MotionEvent.ACTION_UP:
+			case MotionEvent.ACTION_UP:
+				JTGameRenderer.fire = true;
 //				JTEngine.playerFlightAction = JTEngine.PLAYER_RELEASE;
 //				break;
 //			}
-//		}
-//
-//		return super.onTouchEvent(event);
-//	}
+		}
+
+		return super.onTouchEvent(event);
+	}
 
 	public void onAccuracyChanged(Sensor sensor, int accuracy) {
 		// TODO Auto-generated method stub

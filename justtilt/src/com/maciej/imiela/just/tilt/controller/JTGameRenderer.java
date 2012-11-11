@@ -1,21 +1,26 @@
 package com.maciej.imiela.just.tilt.controller;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.opengl.GLSurfaceView.Renderer;
-import android.util.Log;
 
 import com.maciej.imiela.just.tilt.model.JTBackground;
 import com.maciej.imiela.just.tilt.model.JTEnemy;
 import com.maciej.imiela.just.tilt.model.JTEngine;
 import com.maciej.imiela.just.tilt.model.JTGoodGuy;
 import com.maciej.imiela.just.tilt.model.JTTextures;
+import com.maciej.imiela.just.tilt.model.JTWeapon;
 
 public class JTGameRenderer implements Renderer {
 
+	public static boolean fire = false;
+	
 	private JTBackground background = new JTBackground();
 	private JTBackground backgroung1 = new JTBackground();
 	private JTGoodGuy player1 = new JTGoodGuy();
@@ -25,6 +30,7 @@ public class JTGameRenderer implements Renderer {
 	// + JTEngine.TOTAL_SCOUTS + JTEngine.TOTAL_WARSHIPS - 1];
 	private JTTextures textureLoader;
 	private int[] spriteSheets = new int[2];
+	private List<JTWeapon> playerFire = new LinkedList<JTWeapon>();//new LinkedList<JTWeapon>();
 
 	private int goodGuyBankFrames = 0;
 	private long loopStart = 0;
@@ -69,12 +75,14 @@ public class JTGameRenderer implements Renderer {
 
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		initializeInterceptors();
-		initializeScouts();
-		initializeWarships();
+//		initializePlayerWeapons();
+//		initializeScouts();
+//		initializeWarships();
 		textureLoader = new JTTextures(gl);
 		spriteSheets = textureLoader.loadTexture(gl, JTEngine.CHARACTER_SHEET,
 				JTEngine.context, 1);
-
+		spriteSheets = textureLoader.loadTexture(gl, JTEngine.WEAPONS_SHEET,
+				JTEngine.context, 2);
 		/** enabling texture mapping */
 		gl.glEnable(GL10.GL_TEXTURE_2D);
 		/** inform openGL to test depth of every object onn the surface */
@@ -82,8 +90,8 @@ public class JTGameRenderer implements Renderer {
 		gl.glEnable(GL10.GL_DEPTH_TEST);
 		gl.glDepthFunc(GL10.GL_LEQUAL);
 		// /** activate blending feature */
-		 gl.glEnable(GL10.GL_BLEND);
-//		 gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE);
+		gl.glEnable(GL10.GL_BLEND);
+		// gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE);
 
 		gl.glEnable(GL10.GL_BLEND);
 		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
@@ -105,27 +113,65 @@ public class JTGameRenderer implements Renderer {
 		}
 	}
 
-	private void initializeScouts() {
-		for (int x = 0; x < JTEngine.TOTAL_SCOUTS; x++) {
-			JTEnemy interceptor;
-			if (x >= JTEngine.TOTAL_SCOUTS / 2) {
-				interceptor = new JTEnemy(JTEngine.TYPE_SCOUT,
-						JTEngine.ATTACK_RIGHT);
-			} else {
-				interceptor = new JTEnemy(JTEngine.TYPE_SCOUT,
-						JTEngine.ATTACK_LEFT);
+	private void initializePlayerWeapons() {
+		for (int x = 0; x < 10; x++) {
+			playerFire.add(new JTWeapon());
+		}
+		playerFire.get(0).shotFired = true;
+		playerFire.get(0).posX = JTEngine.playerBankPosX;
+		playerFire.get(0).posY = JTEngine.playerBankPosY + 0.25f;
+	}
+
+	private synchronized void firePlayerWeapon(GL10 gl) {
+		if (fire){
+			playerFire.add(new JTWeapon());
+			fire = false;
+		}
+		Iterator<JTWeapon> itr = playerFire.iterator();
+		while (itr.hasNext()){
+			JTWeapon fire = itr.next();
+			if (fire.shotFired) {
+				if (fire.posY > 10.25) {
+					itr.remove();
+				} else {
+					fire.posY += JTEngine.PLAYER_BULLET_SPEED;
+					gl.glMatrixMode(GL10.GL_MODELVIEW);
+					gl.glLoadIdentity();
+					gl.glPushMatrix();
+					gl.glScalef(.1f, .1f, 0f);
+					gl.glTranslatef(fire.posX, fire.posY, 0f);
+					gl.glMatrixMode(GL10.GL_TEXTURE);
+					gl.glLoadIdentity();
+					gl.glTranslatef(0.0f, 0f, 0.0f);
+					fire.draw(gl, spriteSheets);
+					gl.glPopMatrix();
+					gl.glLoadIdentity();
+				}
 			}
-			enemies.add(interceptor);
 		}
 	}
 
-	private void initializeWarships() {
-		for (int x = 0; x < JTEngine.TOTAL_WARSHIPS; x++) {
-			JTEnemy interceptor = new JTEnemy(JTEngine.TOTAL_WARSHIPS,
-					JTEngine.ATTACK_RANDOM);
-			enemies.add(interceptor);
-		}
-	}
+	// private void initializeScouts() {
+	// for (int x = 0; x < JTEngine.TOTAL_SCOUTS; x++) {
+	// JTEnemy interceptor;
+	// if (x >= JTEngine.TOTAL_SCOUTS / 2) {
+	// interceptor = new JTEnemy(JTEngine.TYPE_SCOUT,
+	// JTEngine.ATTACK_RIGHT);
+	// } else {
+	// interceptor = new JTEnemy(JTEngine.TYPE_SCOUT,
+	// JTEngine.ATTACK_LEFT);
+	// }
+	// enemies.add(interceptor);
+	// }
+	// }
+	//
+	// private void initializeWarships() {
+	// for (int x = 0; x < JTEngine.TOTAL_WARSHIPS; x++) {
+	// JTEnemy interceptor = new JTEnemy(JTEngine.TOTAL_WARSHIPS,
+	// JTEngine.ATTACK_RANDOM);
+	// enemies.add(interceptor);
+	// }
+	// }
 
 	private void moveEnemy(GL10 gl) {
 		for (JTEnemy enemy : enemies) {
@@ -160,20 +206,19 @@ public class JTGameRenderer implements Renderer {
 						// (enemy.lockOnPosX - enemy.posX) /
 						// (enemy.lockOnPosY - enemy.posY);
 
-						
 						// Log.v("incrementXToTarget",
 						// Float.valueOf(enemy.posX).toString());
 						// } else {
-//						enemy.posX -= enemy.incrementXToTarget;
+						// enemy.posX -= enemy.incrementXToTarget;
 						// }
 						if (enemy.posY - enemy.lockOnPosY > 0.1f) {
 							enemy.posX = enemy.incrementToX();
 							enemy.posY -= (JTEngine.INTERCEPTOR_SPEED * 4);
-						} else if (enemy.posY - enemy.lockOnPosY < -0.1f){
+						} else if (enemy.posY - enemy.lockOnPosY < -0.1f) {
 							enemy.posX = enemy.decrementToX();
 							enemy.posY += (JTEngine.INTERCEPTOR_SPEED * 4);
-//						} else {
-//							enemy.posY += (JTEngine.INTERCEPTOR_SPEED * 4);
+							// } else {
+							// enemy.posY += (JTEngine.INTERCEPTOR_SPEED * 4);
 						}
 					}
 					gl.glTranslatef(enemy.posX, enemy.posY, 0f);
@@ -313,6 +358,7 @@ public class JTGameRenderer implements Renderer {
 		player1.draw(gl, spriteSheets);
 		gl.glPopMatrix();
 		gl.glLoadIdentity();
+		firePlayerWeapon(gl);
 
 	}
 
