@@ -2,15 +2,12 @@ package com.maciej.imiela.just.tilt.controller;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.graphics.Rect;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.view.Display;
 import android.view.MotionEvent;
-import android.view.WindowManager;
 
 import com.maciej.imiela.just.tilt.model.JTEngine;
 import com.maciej.imiela.just.tilt.view.JTGameView;
@@ -66,7 +63,7 @@ public class JTGame extends Activity implements SensorEventListener {
 //				}
 //				break;
 			case MotionEvent.ACTION_UP:
-				JTGameRenderer.fire = true;
+				JTEngine.fire = true;
 //				JTEngine.playerFlightAction = JTEngine.PLAYER_RELEASE;
 //				break;
 //			}

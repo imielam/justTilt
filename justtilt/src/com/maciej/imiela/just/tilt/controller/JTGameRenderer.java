@@ -19,7 +19,6 @@ import com.maciej.imiela.just.tilt.model.JTWeapon;
 
 public class JTGameRenderer implements Renderer {
 
-	public static boolean fire = false;
 
 	private JTBackground background = new JTBackground();
 	private JTBackground backgroung1 = new JTBackground();
@@ -30,16 +29,15 @@ public class JTGameRenderer implements Renderer {
 	// + JTEngine.TOTAL_SCOUTS + JTEngine.TOTAL_WARSHIPS - 1];
 	private JTTextures textureLoader;
 	private int[] spriteSheets = new int[2];
-	private List<JTWeapon> playerFire = new LinkedList<JTWeapon>();// new
-																	// LinkedList<JTWeapon>();
+	private List<JTWeapon> playerFire = new LinkedList<JTWeapon>();
 
 	private int goodGuyBankFrames = 0;
 	private long loopStart = 0;
 	private long loopEnd = 0;
 	private long loopRunTime = 0;
 
-	private float bgScroll1;
-	private float bgScroll2;
+//	private float bgScroll1;
+//	private float bgScroll2;
 
 	public void onDrawFrame(GL10 gl) {
 		loopStart = System.currentTimeMillis();
@@ -135,11 +133,12 @@ public class JTGameRenderer implements Renderer {
 				if (!enemy.isDestroyed && enemy.posY < 10.25f) {
 					if ((fire.posY >= enemy.posY - 1 && fire.posY <= enemy.posY)
 							&& (fire.posX <= enemy.posX + 1 && fire.posX >= enemy.posX - 1)) {
-//						w.remove();
 						enemy.applyDamage();
 						if (enemy.isDestroyed){
 							e.remove();
 						}
+						w.remove();
+						break;
 					}
 				}
 			}
@@ -160,10 +159,10 @@ public class JTGameRenderer implements Renderer {
 //		}
 	}
 
-	private synchronized void firePlayerWeapon(GL10 gl) {
-		if (fire) {
+	private void firePlayerWeapon(GL10 gl) {
+		if (JTEngine.fire) {
 			playerFire.add(new JTWeapon());
-			fire = false;
+			JTEngine.fire = false;
 		}
 		Iterator<JTWeapon> itr = playerFire.iterator();
 		while (itr.hasNext()) {
@@ -230,25 +229,6 @@ public class JTGameRenderer implements Renderer {
 						enemy.lockOnPosX = JTEngine.playerBankPosX;
 						enemy.lockOnPosY = JTEngine.playerBankPosY;
 						enemy.isLockedOn = true;
-						// Log.v("posx", Float.valueOf(enemy.posX).toString());
-						// Log.v("posy", Float.valueOf(enemy.posY).toString());
-						// Log.v("lockposx", Float.valueOf(enemy.lockOnPosX)
-						// .toString());
-						// Log.v("lockposy", Float.valueOf(enemy.lockOnPosY)
-						// .toString());
-						// enemy.incrementXToTarget =
-						// (float) ((enemy.lockOnPosX - enemy.posX )/
-						// (enemy.posY /
-						// (JTEngine.INTERCEPTOR_SPEED * 4)));
-						// ((JTEngine.INTERCEPTOR_SPEED * 4) - enemy.posY) *
-						// (enemy.lockOnPosX - enemy.posX) /
-						// (enemy.lockOnPosY - enemy.posY);
-
-						// Log.v("incrementXToTarget",
-						// Float.valueOf(enemy.posX).toString());
-						// } else {
-						// enemy.posX -= enemy.incrementXToTarget;
-						// }
 						if (enemy.posY - enemy.lockOnPosY > 0.1f) {
 							enemy.posX = enemy.incrementToX();
 							enemy.posY -= (JTEngine.INTERCEPTOR_SPEED * 4);
@@ -409,42 +389,68 @@ public class JTGameRenderer implements Renderer {
 	 * @param gl
 	 */
 	private void scrollBackground1(GL10 gl) {
-		if (bgScroll1 == Float.MAX_VALUE)
-			bgScroll1 = 0f;
+//		if (bgScroll1 == Float.MAX_VALUE)
+//			bgScroll1 = 0f;
 		/** reset the scale and translate of the Model matrix mode */
 		gl.glMatrixMode(GL10.GL_MODELVIEW);
 		gl.glLoadIdentity();
 		gl.glPushMatrix();
-		gl.glScalef(1f, 1f, 1f);
+//		gl.glScalef(1f, 1f, 1f);
 		gl.glTranslatef(0f, 0f, 0f);
 
 		gl.glMatrixMode(GL10.GL_TEXTURE);
 		gl.glLoadIdentity();
-		gl.glTranslatef(bgScroll1, 0.0f, 0.0f);
+		gl.glTranslatef(0.0f, 0.0f, 0.0f);
 
 		background.draw(gl);
 		gl.glPopMatrix();
-		bgScroll1 += JTEngine.SCROLL_BACKGROUND_1;
+//		bgScroll1 += JTEngine.SCROLL_BACKGROUND_1;
 		gl.glLoadIdentity();
 	}
 
 	private void scrollBackground2(GL10 gl) {
-		if (bgScroll2 == Float.MAX_VALUE) {
-			bgScroll2 = 0f;
+		switch (JTEngine.playerFlightActionY) {
+		case JTEngine.PLAYER_BANK_FORWARD:
+			if (JTEngine.backgroundYPosition < 1) {
+				JTEngine.backgroundYPosition += JTEngine.SCROLL_BACKGROUND_1;
+			}
+			break;
+		case JTEngine.PLAYER_BANK_BACKWARD:
+			if (JTEngine.backgroundYPosition > 0) {
+				JTEngine.backgroundYPosition -= JTEngine.SCROLL_BACKGROUND_1;
+			}
+			break;
+		default:
+			break;
 		}
 
+		switch (JTEngine.playerFlightAction) {
+		case JTEngine.PLAYER_BANK_LEFT_1:
+			if (JTEngine.backgroundXPosition > 0) {
+				JTEngine.backgroundXPosition -= JTEngine.SCROLL_BACKGROUND_1;
+			}
+			break;
+		case JTEngine.PLAYER_BANK_RIGHT_1:
+			if (JTEngine.backgroundXPosition < (2/JTEngine.SCREEN_PROPORTION - 1)) {
+				JTEngine.backgroundXPosition += JTEngine.SCROLL_BACKGROUND_1;
+			}
+			break;
+		case JTEngine.PLAYER_RELEASE:
+		default:
+			break;
+		}
+		
 		gl.glMatrixMode(GL10.GL_MODELVIEW);
 		gl.glLoadIdentity();
 		gl.glPushMatrix();
-		gl.glScalef(1f, 0.5f, 1f);
-		gl.glTranslatef(0f, -0.5f, 0f);
+		gl.glScalef(0.5f*JTEngine.SCREEN_PROPORTION, 0.5f, 1f);
+		gl.glTranslatef(JTEngine.backgroundXPosition, JTEngine.backgroundYPosition, 0f);
 
 		gl.glMatrixMode(GL10.GL_TEXTURE);
 		gl.glLoadIdentity();
-		gl.glTranslatef(bgScroll2, 0.0f, 0.0f);
+		gl.glTranslatef(0.0f, 0.0f, 0.0f);
 		backgroung1.draw(gl);
 		gl.glPopMatrix();
-		bgScroll2 += JTEngine.SCROLL_BACKGROUND_2;
 		gl.glLoadIdentity();
 	}
 

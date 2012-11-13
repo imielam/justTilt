@@ -22,10 +22,13 @@ public class JTEngine {
 	public static final int L_VOLUME = 0;
 	public static final boolean LOOP_BACKGRAND_MUSIC = true;
 	/** constants that are essentials to draw background */
-	public static final int BACKGROUND_LAYER_ONE = R.drawable.jt_background1;
+	public static final int BACKGROUND_LAYER_ONE = R.drawable.fistr_background;
 	public static final float SCROLL_BACKGROUND_1 = 0.002f;
-	public static final int BACKGROUND_LAYER_TWO = R.drawable.secendary_background;
+	public static final int BACKGROUND_LAYER_TWO = R.drawable.secon_background;
 	public static float SCROLL_BACKGROUND_2 = 0.007f;
+	public static final float SCREEN_PROPORTION = 9/16f;
+	public static float backgroundXPosition = 0.6f*2f/JTEngine.SCREEN_PROPORTION;
+	public static float backgroundYPosition = 0.8f;
 
 	public static Context context; // hold the thread that is playing the music
 	// public static boolean isPlayingMusic = false;
@@ -45,7 +48,7 @@ public class JTEngine {
 	public static float playerBankPosX = 4.5f;
 	public static float playerBankPosY = 3f;
 	/** Enemy AI */
-	public static int TOTAL_INTERCEPTORS = 100;
+	public static int TOTAL_INTERCEPTORS = 35;
 	public static int TOTAL_SCOUTS = 0;//15;
 	public static int TOTAL_WARSHIPS = 0;//5;
 	public static float INTERCEPTOR_SPEED = SCROLL_BACKGROUND_1 * 4f;
@@ -72,6 +75,7 @@ public class JTEngine {
 	public static final int INTERCEPTOR_SHIELDS = 1;
 //	public static final int WARSHIP_SHIELDS = 5;
 	public static final float PLAYER_BULLET_SPEED = .125f;
+	public static boolean fire = false;
 
 	/*
 	 * constant that describe how often the sprite is animated (9 animation of
