@@ -5,7 +5,23 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
-//TODO Change the class to extend class JTDrawable(chreate it first)
+/******************************************************************************* 
+ * Filename : MyGraphView
+ * 
+ * Author : Maciej Imiela <m.imiela@samsung.com>
+ * 
+ * Date : <12-11-2012>
+ * 
+ * Description :
+ * 
+ * Design Document : 
+ * 
+ * COPYRIGHT NOTICE 
+ * ================= 
+ * The contents of this file are protected under international copyright 
+ * laws and may not be copied.
+ *******************************************************************************/
+//TODO Change the class to extend class JTDrawable(create it first)
 public class JTGoodGuy {
 
 	private FloatBuffer vertexBuffer;

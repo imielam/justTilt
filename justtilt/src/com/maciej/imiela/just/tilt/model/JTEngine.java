@@ -6,7 +6,22 @@ import android.view.Display;
 import android.view.View;
 
 import com.maciej.imiela.just.tilt.controller.R;
-
+/******************************************************************************* 
+ * Filename : MyGraphView
+ * 
+ * Author : Maciej Imiela <m.imiela@samsung.com>
+ * 
+ * Date : <12-11-2012>
+ * 
+ * Description :
+ * 
+ * Design Document : 
+ * 
+ * COPYRIGHT NOTICE 
+ * ================= 
+ * The contents of this file are protected under international copyright 
+ * laws and may not be copied.
+ *******************************************************************************/
 public class JTEngine {
 	/** Constant to use accelerometer */
 	public static final int ACCELEROMETER_CHANGE_ACCEPTANCE = 1;
@@ -18,8 +33,8 @@ public class JTEngine {
 	public static final int GAME_THREAD_FPS_SLEEP = (1000 / 60);
 	/** Constants that will be essential to use music */
 	public static final int SPLAH_SCREEN_MUSIC = R.raw.background_music_by_setuniman;
-	public static final int R_VOLUME = 0;
-	public static final int L_VOLUME = 0;
+	public static final int R_VOLUME = 100;
+	public static final int L_VOLUME = 100;
 	public static final boolean LOOP_BACKGRAND_MUSIC = true;
 	/** constants that are essentials to draw background */
 	public static final int BACKGROUND_LAYER_ONE = R.drawable.fistr_background;
@@ -32,7 +47,7 @@ public class JTEngine {
 
 	public static Context context; // hold the thread that is playing the music
 	// public static boolean isPlayingMusic = false;
-	public static Thread musicThread;
+	public static Thread musicThread = null;
 	public static Display display;
 	/** move the good character */
 	public static int playerFlightAction = 0; // check the stae of the goodGuy
@@ -48,31 +63,13 @@ public class JTEngine {
 	public static float playerBankPosX = 4.5f;
 	public static float playerBankPosY = 3f;
 	/** Enemy AI */
-	public static int TOTAL_INTERCEPTORS = 35;
-	public static int TOTAL_SCOUTS = 0;//15;
-	public static int TOTAL_WARSHIPS = 0;//5;
-	public static float INTERCEPTOR_SPEED = SCROLL_BACKGROUND_1 * 4f;
-	public static float SCOUT_SPEED = SCROLL_BACKGROUND_1 * 6f;
-	public static float WARSHIP_SPEED = SCROLL_BACKGROUND_2 * 4f;
-	public static final int TYPE_INTERCEPTOR = 1;
-	public static final int TYPE_SCOUT = 2;
-	public static final int TYPE_WARSHIP = 3;
-	public static final int ATTACK_RANDOM = 0;
-	public static final int ATTACK_RIGHT = 1;
-	public static final int ATTACK_LEFT = 2;
-	public static final float BEZIER_X_1 = 0f;
-	public static final float BEZIER_X_2 = 1f;
-	public static final float BEZIER_X_3 = 2.5f;
-	public static final float BEZIER_X_4 = 3f;
-	public static final float BEZIER_Y_1 = 0f;
-	public static final float BEZIER_Y_2 = 2.4f;
-	public static final float BEZIER_Y_3 = 1.5f;
-	public static final float BEZIER_Y_4 = 2.6f;
+//	public static int TOTAL_ENEMY = 35;
+	public static float ENEMY_SPEED = SCROLL_BACKGROUND_1 * 4f;
 	/** weapons */
 	public static final int WEAPONS_SHEET = R.drawable.weapons_sprite;
 	public static final int PLAYER_SHIELDS = 5;
 //	public static final int SCOUT_SHIELDS = 3;
-	public static final int INTERCEPTOR_SHIELDS = 1;
+	public static final int ENEMY_SHIELDS = 1;
 //	public static final int WARSHIP_SHIELDS = 5;
 	public static final float PLAYER_BULLET_SPEED = .125f;
 	public static boolean fire = false;
@@ -92,6 +89,9 @@ public class JTEngine {
 	 *         ordinary happened
 	 */
 	public boolean onExit(View v) {
+		if (JTEngine.musicThread == null){
+			return true;
+		}
 		try {
 			Intent bgMusic = new Intent(context, JTMusic.class);
 			context.stopService(bgMusic);

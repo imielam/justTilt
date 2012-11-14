@@ -8,24 +8,39 @@ import java.util.Random;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.util.Log;
-
-//TODO Change the class to extend class JTDrawable(chreate it first)
+/******************************************************************************* 
+ * Filename : MyGraphView
+ * 
+ * Author : Maciej Imiela <m.imiela@samsung.com>
+ * 
+ * Date : <12-11-2012>
+ * 
+ * Description :
+ * 
+ * Design Document : 
+ * 
+ * COPYRIGHT NOTICE 
+ * ================= 
+ * The contents of this file are protected under international copyright 
+ * laws and may not be copied.
+ *******************************************************************************/
+//TODO Change the class to extend class JTDrawable(create it first)
 public class JTEnemy {
 
 	// TODO Don't like the public variables, should be private with getter and
 	// setter. Remeber to change this.
 	public float posY = 0f; // the x position of the enemy
 	public float posX = 0f; // the y position of the enemy
-	public float posT = 0f; // the t used in calculating a Bezier curve
+	// public float posT = 0f; // the t used in calculating a Bezier curve
 	public float incrementXToTarget = 0f; // the x increment to reach a
 											// potential target
 	public float incrementYToTarget = 0f; // the y increment to reach a
 											// potential target
 
-	public int attackDirection = 0; // the attack direction of the ship
+	// public int attackDirection = 0; // the attack direction of the ship
 	public boolean isDestroyed = false; // has this ship been destroyed?+
 	private int damage = 0;
-	public int enemyType = 0; // what type of enemy is this?
+	// public int enemyType = 0; // what type of enemy is this?
 
 	public boolean isLockedOn = false; // had the enemy locked on to a target?
 	public float lockOnPosX = 0f; // x position of the target
@@ -44,28 +59,33 @@ public class JTEnemy {
 			0.0f, 0.5f, };
 	private byte indices[] = { 0, 1, 2, 0, 2, 3, };
 
-	public void init() {
-		posY = (randomPos.nextFloat() * 9) + 9;
-		switch (attackDirection) {
-		case JTEngine.ATTACK_LEFT:
-			posX = 0;
-			break;
-		case JTEngine.ATTACK_RANDOM:
-			posX = randomPos.nextFloat() * 9;
-			break;
-		case JTEngine.ATTACK_RIGHT:
-			posX = 9;
-			break;
-		}
-		posT = JTEngine.SCOUT_SPEED;
+//	public void init() {
+//		posY = (randomPos.nextFloat() * 9) + 9;
+//		// switch (attackDirection) {
+//		// case JTEngine.ATTACK_LEFT:
+//		// posX = 0;
+//		// break;
+//		// case JTEngine.ATTACK_RANDOM:
+//		// posX = randomPos.nextFloat() * 9;
+//		// break;
+//		// case JTEngine.ATTACK_RIGHT:
+//		// posX = 9;
+//		// break;
+//		// }
+//		// posT = JTEngine.SCOUT_SPEED;
+//		lockOnPosX = 0;
+//		lockOnPosY = 0;
+//		isLockedOn = false;
+//	}
+
+	public JTEnemy() {
+		posY = randomPos.nextFloat() * 9;
+		posX = randomPos.nextFloat() * 9;
 		lockOnPosX = 0;
 		lockOnPosY = 0;
 		isLockedOn = false;
-	}
-
-	public JTEnemy(int type, int direction) {
-		enemyType = type;
-		attackDirection = direction;
+		// enemyType = type;
+		// attackDirection = direction;
 		// posY = (randomPos.nextFloat() * 9) + 9;
 		// switch (attackDirection) {
 		// case JTEngine.ATTACK_LEFT:
@@ -79,7 +99,7 @@ public class JTEnemy {
 		// break;
 		// }
 		// posT = JTEngine.SCOUT_SPEED;
-		this.init();
+//		this.init();
 
 		ByteBuffer byteBuf = ByteBuffer.allocateDirect(vertices.length * 4);
 		byteBuf.order(ByteOrder.nativeOrder());
@@ -100,12 +120,12 @@ public class JTEnemy {
 		// return ((JTEngine.INTERCEPTOR_SPEED * 4) - posY - lockOnPosY) *
 		// (lockOnPosX - posX) / (-lockOnPosY + posY);
 		return (posX - lockOnPosX)
-				* (posY - JTEngine.INTERCEPTOR_SPEED * 4 - lockOnPosY)
+				* (posY - JTEngine.ENEMY_SPEED * 4 - lockOnPosY)
 				/ (posY - lockOnPosY) + lockOnPosX;
 	}
 
 	public float decrementToX() {
-		return (lockOnPosX - posX) * (JTEngine.INTERCEPTOR_SPEED * 4)
+		return (lockOnPosX - posX) * (JTEngine.ENEMY_SPEED * 4)
 				/ (lockOnPosY - posY) + posX;
 	}
 
@@ -156,22 +176,9 @@ public class JTEnemy {
 
 	public void applyDamage() {
 		damage++;
-		switch (enemyType) {
-		case JTEngine.TYPE_INTERCEPTOR:
-			if (damage == JTEngine.INTERCEPTOR_SHIELDS) {
-				isDestroyed = true;
-			}
-			break;
-		// case JTEngine.TYPE_SCOUT:
-		// if (damage == JTEngine.SCOUT_SHIELDS){
-		// isDestroyed = true;
-		// }
-		// break;
-		// case JTEngine.TYPE_WARSHIP:
-		// if (damage == JTEngine.WARSHIP_SHIELDS){
-		// isDestroyed = true;
-		// }
-		// break;
+		if (damage == JTEngine.ENEMY_SHIELDS) {
+			isDestroyed = true;
 		}
+
 	}
 }

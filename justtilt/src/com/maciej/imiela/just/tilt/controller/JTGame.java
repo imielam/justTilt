@@ -1,5 +1,8 @@
 package com.maciej.imiela.just.tilt.controller;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.hardware.Sensor;
@@ -13,7 +16,23 @@ import com.maciej.imiela.just.tilt.model.JTEngine;
 import com.maciej.imiela.just.tilt.view.JTGameView;
 
 @TargetApi(13)
-public class JTGame extends Activity implements SensorEventListener {
+/******************************************************************************* 
+ * Filename : MyGraphView
+ * 
+ * Author : Maciej Imiela <m.imiela@samsung.com>
+ * 
+ * Date : <12-11-2012>
+ * 
+ * Description :
+ * 
+ * Design Document : 
+ * 
+ * COPYRIGHT NOTICE 
+ * ================= 
+ * The contents of this file are protected under international copyright 
+ * laws and may not be copied.
+ *******************************************************************************/
+public class JTGame extends Activity implements SensorEventListener, Observer {
 	private JTGameView gameView;
 
 	private Sensor accelerometr;
@@ -25,6 +44,7 @@ public class JTGame extends Activity implements SensorEventListener {
 		super.onCreate(savedInstanceState);
 		gameView = new JTGameView(this);
 		setContentView(gameView);
+		gameView.getRenderer().addObserver((Observer)this);
 
 		sm = (SensorManager) getSystemService(SENSOR_SERVICE);
 		if (sm.getSensorList(Sensor.TYPE_ACCELEROMETER).size() != 0) {
@@ -115,6 +135,10 @@ public class JTGame extends Activity implements SensorEventListener {
 		gameView.onResume();
 		sm.registerListener(this, accelerometr,
 				SensorManager.SENSOR_DELAY_NORMAL);
+	}
+
+	public void update(Observable arg0, Object arg1) {
+		this.finish();
 	}
 
 	// @Override
