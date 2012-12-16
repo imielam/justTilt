@@ -9,7 +9,9 @@ import java.util.Observable;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import android.graphics.PointF;
 import android.opengl.GLSurfaceView.Renderer;
+import android.util.Log;
 
 import com.maciej.imiela.just.tilt.model.JTBackground;
 import com.maciej.imiela.just.tilt.model.JTEnemy;
@@ -34,6 +36,8 @@ import com.maciej.imiela.just.tilt.model.JTWeapon;
  * laws and may not be copied.
  *******************************************************************************/
 public class JTGameRenderer extends Observable implements Renderer {
+	
+	private static String TAG = JTGameRenderer.class.getSimpleName();
 
 	private JTBackground background = new JTBackground();
 	private JTBackground backgroung1 = new JTBackground();
@@ -51,7 +55,7 @@ public class JTGameRenderer extends Observable implements Renderer {
 	private long loopEnd = 0;
 	private long loopRunTime = 0;
 
-	private int count = 0;
+	private int count = 61;
 
 	// private float bgScroll1;
 	// private float bgScroll2;
@@ -66,7 +70,7 @@ public class JTGameRenderer extends Observable implements Renderer {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		count++;
+//		count++;
 		if (count >= 60) {
 			count = 0;
 			enemies.add(new JTEnemy());
@@ -203,66 +207,35 @@ public class JTGameRenderer extends Observable implements Renderer {
 			}
 		}
 	}
-
-	// private void initializeScouts() {
-	// for (int x = 0; x < JTEngine.TOTAL_SCOUTS; x++) {
-	// JTEnemy interceptor;
-	// if (x >= JTEngine.TOTAL_SCOUTS / 2) {
-	// interceptor = new JTEnemy(JTEngine.TYPE_SCOUT,
-	// JTEngine.ATTACK_RIGHT);
-	// } else {
-	// interceptor = new JTEnemy(JTEngine.TYPE_SCOUT,
-	// JTEngine.ATTACK_LEFT);
-	// }
-	// enemies.add(interceptor);
-	// }
-	// }
-	//
-	// private void initializeWarships() {
-	// for (int x = 0; x < JTEngine.TOTAL_WARSHIPS; x++) {
-	// JTEnemy interceptor = new JTEnemy(JTEngine.TOTAL_WARSHIPS,
-	// JTEngine.ATTACK_RANDOM);
-	// enemies.add(interceptor);
-	// }
-	// }
-
 	private void moveEnemy(GL10 gl) {
 		for (JTEnemy enemy : enemies) {
 			if (!enemy.isDestroyed) {
 
-				// if (enemy.posY < -0.1) {
-				// enemy.init();
-				// }
 				gl.glMatrixMode(GL10.GL_MODELVIEW);
 				gl.glLoadIdentity();
 				gl.glPushMatrix();
 				gl.glScalef(.1f, .1f, 1f);
-				// if (!enemy.isLockedOn && enemy.posY >= 7) {
-				// enemy.posY -= JTEngine.ENEMY_SPEED;
-				// } else {
-				// if (enemy.isLockedOn) {
 				enemy.lockOnPosX = JTEngine.playerBankPosX;
 				enemy.lockOnPosY = JTEngine.playerBankPosY;
 				enemy.isLockedOn = true;
-				if (enemy.posY - enemy.lockOnPosY > 1f) {
-					enemy.posX = enemy.incrementToX();
-					enemy.posY -= (JTEngine.ENEMY_SPEED);
-				} else if (enemy.posY - enemy.lockOnPosY < -1f) {
-					enemy.posX = enemy.decrementToX();
-					enemy.posY += (JTEngine.ENEMY_SPEED);
-					// } else {
-					// enemy.posY += (JTEngine.INTERCEPTOR_SPEED * 4);
-				} else {
-					if (enemy.posX - enemy.lockOnPosX < 0.8f && enemy.posX - enemy.lockOnPosX > -0.8f){
-						this.setChanged();
-						this.notifyObservers("dom");
-					}
+				enemy.move();
+				//TODO Colision detection in move enemy, change it to colisionDetection method
+				if (enemy.posX - enemy.lockOnPosX < 0.8f
+						&& enemy.posX - enemy.lockOnPosX > -0.8f && enemy.posY - enemy.lockOnPosY < 0.8f
+						&& enemy.posY - enemy.lockOnPosY > -0.8f) {
+					
+					Log.v(TAG, "enemy position X = " + enemy.lockOnPosX + " Y = " + enemy.lockOnPosY);
+					this.setChanged();
+					this.notifyObservers("dom");
 				}
 
 				gl.glTranslatef(enemy.posX, enemy.posY, 0f);
+//				gl.glTranslatef(centerX, centerY, centerZ);
+//				gl.glTranslatef(-centerX, -centerY, -centerZ);
 				gl.glMatrixMode(GL10.GL_TEXTURE);
 				gl.glLoadIdentity();
 				gl.glTranslatef(0f, 0f, 0.0f);
+//				gl.glRotatef(45f, 0, 0, 1);
 				enemy.draw(gl, spriteSheets);
 				gl.glPopMatrix();
 				gl.glLoadIdentity();

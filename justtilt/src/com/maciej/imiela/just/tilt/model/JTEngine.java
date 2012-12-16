@@ -64,7 +64,8 @@ public class JTEngine {
 	public static float playerBankPosY = 3f;
 	/** Enemy AI */
 //	public static int TOTAL_ENEMY = 35;
-	public static float ENEMY_SPEED = SCROLL_BACKGROUND_1 * 4f;
+	public static float ENEMY_SPEED = SCROLL_BACKGROUND_1 * 4f;;
+//	public static float ENEMY_SPEED = 0.1f;
 	/** weapons */
 	public static final int WEAPONS_SHEET = R.drawable.weapons_sprite;
 	public static final int PLAYER_SHIELDS = 5;

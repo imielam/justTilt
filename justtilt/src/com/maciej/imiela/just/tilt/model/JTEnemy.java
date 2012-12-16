@@ -7,6 +7,7 @@ import java.util.Random;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import android.graphics.PointF;
 import android.util.Log;
 /******************************************************************************* 
  * Filename : MyGraphView
@@ -26,6 +27,7 @@ import android.util.Log;
  *******************************************************************************/
 //TODO Change the class to extend class JTDrawable(create it first)
 public class JTEnemy {
+	private static String TAG = JTEnemy.class.getSimpleName();
 
 	// TODO Don't like the public variables, should be private with getter and
 	// setter. Remeber to change this.
@@ -37,16 +39,15 @@ public class JTEnemy {
 	public float incrementYToTarget = 0f; // the y increment to reach a
 											// potential target
 
-	// public int attackDirection = 0; // the attack direction of the ship
 	public boolean isDestroyed = false; // has this ship been destroyed?+
 	private int damage = 0;
-	// public int enemyType = 0; // what type of enemy is this?
 
 	public boolean isLockedOn = false; // had the enemy locked on to a target?
 	public float lockOnPosX = 0f; // x position of the target
 	public float lockOnPosY = 0f; // y position of the target
+	public float tgalfa = 0f; //tg alfa of the line which enemy is moving
 
-	private Random randomPos = new Random();
+	private Random randomPos = new Random(15);
 
 	private FloatBuffer vertexBuffer;
 	private FloatBuffer textureBuffer;
@@ -84,22 +85,6 @@ public class JTEnemy {
 		lockOnPosX = 0;
 		lockOnPosY = 0;
 		isLockedOn = false;
-		// enemyType = type;
-		// attackDirection = direction;
-		// posY = (randomPos.nextFloat() * 9) + 9;
-		// switch (attackDirection) {
-		// case JTEngine.ATTACK_LEFT:
-		// posX = 0;
-		// break;
-		// case JTEngine.ATTACK_RANDOM:
-		// posX = randomPos.nextFloat() * 9;
-		// break;
-		// case JTEngine.ATTACK_RIGHT:
-		// posX = 9;
-		// break;
-		// }
-		// posT = JTEngine.SCOUT_SPEED;
-//		this.init();
 
 		ByteBuffer byteBuf = ByteBuffer.allocateDirect(vertices.length * 4);
 		byteBuf.order(ByteOrder.nativeOrder());
@@ -116,6 +101,49 @@ public class JTEnemy {
 		indexBuffer.position(0);
 	}
 
+	public void move(){
+		//wyznaczenie wzoru prostej po ktorej ma sie poruszac nasz przeciwnik
+		float a = (posY - lockOnPosY)/(posX - lockOnPosX);
+		float b = posY - a*posX;
+		tgalfa = a;
+		//wyznaczenie wspó³rzêdnych punktu na prostej w zale¿noœci od szybkoœci prouszania siê
+		//wyznaczenie tego korzystaj¹c z wzoru na odleg³oœæ dwóch punktów w przestrzeni
+		float c = 1 + a*a;
+		float d = 2*a*b - 2*posY*a - 2*posX;
+		float e = posX*posX + posY*posY + b*b - 2*posY*b - JTEngine.ENEMY_SPEED*JTEngine.ENEMY_SPEED; 
+		float x;
+		
+		float delta = d*d - 4*c*e;
+		if (delta < 0){
+			x = posX;
+			Log.v(TAG, "Delta ujemna");
+		} else {
+			double x1 = (-d + Math.sqrt(delta))/(2*c); 
+			double x2 = (-d - Math.sqrt(delta))/(2*c); 
+			if (Math.abs(lockOnPosX - x1) < Math.abs(lockOnPosX - x2)){
+				x = (float) x1;
+			} else {
+				x = (float) x2;
+			}
+			
+		}
+		
+		float y = a*x + b;
+		posX = x;
+		posY = y;
+		
+		
+//		if (this.posY - this.lockOnPosY > 1f) {
+//			this.posX = this.incrementToX();
+//			this.posY -= (JTEngine.ENEMY_SPEED);
+//		} else if (this.posY - this.lockOnPosY < -1f) {
+//			this.posX = this.decrementToX();
+//			this.posY += (JTEngine.ENEMY_SPEED);}
+//			// } else {
+//			// this.posY += (JTEngine.INTERCEPTOR_SPEED * 4);
+	}
+	
+	
 	public float incrementToX() {
 		// return ((JTEngine.INTERCEPTOR_SPEED * 4) - posY - lockOnPosY) *
 		// (lockOnPosX - posX) / (-lockOnPosY + posY);
@@ -128,30 +156,6 @@ public class JTEnemy {
 		return (lockOnPosX - posX) * (JTEngine.ENEMY_SPEED * 4)
 				/ (lockOnPosY - posY) + posX;
 	}
-
-	// public float getNextScoutX() {
-	// if (attackDirection == JTEngine.ATTACK_LEFT) {
-	// return (float) ((JTEngine.BEZIER_X_4 * (posT * posT * posT))
-	// + (JTEngine.BEZIER_X_3 * 3 * (posT * posT) * (1 - posT))
-	// + (JTEngine.BEZIER_X_2 * 3 * posT * ((1 - posT) * (1 - posT))) +
-	// (JTEngine.BEZIER_X_1 * ((1 - posT)
-	// * (1 - posT) * (1 - posT))));
-	// } else {
-	// return (float) ((JTEngine.BEZIER_X_1 * (posT * posT * posT))
-	// + (JTEngine.BEZIER_X_2 * 3 * (posT * posT) * (1 - posT))
-	// + (JTEngine.BEZIER_X_3 * 3 * posT * ((1 - posT) * (1 - posT))) +
-	// (JTEngine.BEZIER_X_4 * ((1 - posT)
-	// * (1 - posT) * (1 - posT))));
-	// }
-	// }
-	//
-	// public float getNextScoutY() {
-	// return (float) ((JTEngine.BEZIER_Y_1 * (posT * posT * posT))
-	// + (JTEngine.BEZIER_Y_2 * 3 * (posT * posT) * (1 - posT))
-	// + (JTEngine.BEZIER_Y_3 * 3 * posT * ((1 - posT) * (1 - posT))) +
-	// (JTEngine.BEZIER_Y_4 * ((1 - posT)
-	// * (1 - posT) * (1 - posT))));
-	// }
 
 	public void draw(GL10 gl, int[] spriteSheet) {
 
