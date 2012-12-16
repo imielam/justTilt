@@ -15,8 +15,7 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
-            android:screenOrientation="landscape"
-            android:theme="@android:style/Theme.Holo.NoActionBar" >
+            android:screenOrientation="landscape" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -26,8 +25,7 @@
         <activity
             android:name=".JTMainMenu"
             android:label="@string/title_activity_spash_screen"
-            android:screenOrientation="landscape"
-            android:theme="@android:style/Theme.Holo.NoActionBar" >
+            android:screenOrientation="landscape" >
             />
         </activity>
 
@@ -36,8 +34,7 @@
 
         <activity android:name=".JTGame" 
             android:keepScreenOn="true"
-            android:screenOrientation="landscape"
-            android:theme="@android:style/Theme.Holo.NoActionBar" >
+            android:screenOrientation="landscape" >
         </activity>
     </application>
 

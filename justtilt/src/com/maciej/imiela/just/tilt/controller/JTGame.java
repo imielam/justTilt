@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 
 import com.maciej.imiela.just.tilt.model.JTEngine;
+import com.maciej.imiela.just.tilt.model.JTGoodGuy;
 import com.maciej.imiela.just.tilt.view.JTGameView;
 
 @TargetApi(13)
@@ -37,7 +38,7 @@ public class JTGame extends Activity implements SensorEventListener, Observer {
 
 	private Sensor accelerometr;
 	private SensorManager sm;
-	private float prevX, prevY, sensorX, sensorY;
+	private float prevY, prevX, sensorY, sensorX;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -50,13 +51,12 @@ public class JTGame extends Activity implements SensorEventListener, Observer {
 		if (sm.getSensorList(Sensor.TYPE_ACCELEROMETER).size() != 0) {
 			accelerometr = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 			sm.registerListener(this, accelerometr,
-					SensorManager.SENSOR_DELAY_NORMAL);
+					SensorManager.SENSOR_DELAY_GAME);
 		}
 	}
 
 	@Override
 	protected void onPause() {
-		// TODO Auto-generated method stub
 		super.onPause();
 		gameView.onPause();
 		sm.unregisterListener(this);
@@ -64,63 +64,52 @@ public class JTGame extends Activity implements SensorEventListener, Observer {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-//		float x = event.getX();
-//		float y = event.getY();
-//		Rect display = new Rect();
-//		WindowManager w = getWindowManager();
-//		Display d = w.getDefaultDisplay();
-//		d.getRectSize(display);
-//
-//		int height = display.height() / 4;
-//		int playableArea = display.height() - height;
-//		if (y > playableArea) {
 			switch (event.getAction()) {
-//			case MotionEvent.ACTION_DOWN:
-//				if (x < display.width() / 2) {
-//					JTEngine.playerFlightAction = JTEngine.PLAYER_BANK_LEFT_1;
-//				} else {
-//					JTEngine.playerFlightAction = JTEngine.PLAYER_BANK_RIGHT_1;
-//				}
-//				break;
 			case MotionEvent.ACTION_UP:
 				JTEngine.fire = true;
-//				JTEngine.playerFlightAction = JTEngine.PLAYER_RELEASE;
-//				break;
-//			}
 		}
 
 		return super.onTouchEvent(event);
 	}
 
 	public void onAccuracyChanged(Sensor sensor, int accuracy) {
-		// TODO Auto-generated method stub
-
 	}
 
 	public void onSensorChanged(SensorEvent event) {
-		// TODO Auto-generated method stub
+		// TODO think about synchronization and multithreading
 
-		sensorX = event.values[0];
-		sensorY = event.values[1];
-		if (Math.abs(sensorX - prevX) > JTEngine.ACCELEROMETER_CHANGE_ACCEPTANCE) {
-			prevX = sensorX;
-		}
+		
+		boolean changed = false;
+		sensorY = event.values[0];
+		sensorX = event.values[1];
+		
+		
+		
 		if (Math.abs(sensorY - prevY) > JTEngine.ACCELEROMETER_CHANGE_ACCEPTANCE) {
 			prevY = sensorY;
+			changed = true;
+		}
+		if (Math.abs(sensorX - prevX) > JTEngine.ACCELEROMETER_CHANGE_ACCEPTANCE) {
+			prevX = sensorX;
+			changed = true;
+		}
+		if (changed) {
+			JTGoodGuy.determineRotateAngle(sensorX, -sensorY);
+			changed = false;
 		}
 
-		if (prevX > JTEngine.ACCELEROMETER_CHANGE_BEHAVIOR) {
+		if (prevY > JTEngine.ACCELEROMETER_CHANGE_BEHAVIOR) {
 			JTEngine.playerFlightActionY = JTEngine.PLAYER_BANK_BACKWARD;
-		} else if (prevX < -JTEngine.ACCELEROMETER_CHANGE_BEHAVIOR) {
+		} else if (prevY < -JTEngine.ACCELEROMETER_CHANGE_BEHAVIOR) {
 			JTEngine.playerFlightActionY = JTEngine.PLAYER_BANK_FORWARD;
 		} else {
 			JTEngine.playerFlightActionY = JTEngine.PLAYER_RELEASE;
 		}
 
 		
-		if (prevY > JTEngine.ACCELEROMETER_CHANGE_BEHAVIOR) {
+		if (prevX > JTEngine.ACCELEROMETER_CHANGE_BEHAVIOR) {
 			JTEngine.playerFlightAction = JTEngine.PLAYER_BANK_RIGHT_1;
-		} else if (prevY < -JTEngine.ACCELEROMETER_CHANGE_BEHAVIOR) {
+		} else if (prevX < -JTEngine.ACCELEROMETER_CHANGE_BEHAVIOR) {
 			JTEngine.playerFlightAction = JTEngine.PLAYER_BANK_LEFT_1;
 		} else {
 			JTEngine.playerFlightAction = JTEngine.PLAYER_RELEASE;
@@ -130,7 +119,6 @@ public class JTGame extends Activity implements SensorEventListener, Observer {
 
 	@Override
 	protected void onResume() {
-		// TODO Auto-generated method stub
 		super.onResume();
 		gameView.onResume();
 		sm.registerListener(this, accelerometr,
@@ -140,23 +128,5 @@ public class JTGame extends Activity implements SensorEventListener, Observer {
 	public void update(Observable arg0, Object arg1) {
 		this.finish();
 	}
-
-	// @Override
-	// protected void onStop() {
-	// // TODO Auto-generated method stub
-	// super.onStop();
-	// }
-	//
-	// @Override
-	// protected void onRestart() {
-	// // TODO Auto-generated method stub
-	// super.onRestart();
-	// }
-
-	// @Override
-	// protected void onDestroy() {
-	// super.onStop();
-	// engine.onExit(null);
-	// }
 
 }

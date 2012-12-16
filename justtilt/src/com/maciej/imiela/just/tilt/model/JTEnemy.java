@@ -7,7 +7,9 @@ import java.util.Random;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import android.graphics.Point;
 import android.graphics.PointF;
+import android.util.FloatMath;
 import android.util.Log;
 /******************************************************************************* 
  * Filename : MyGraphView
@@ -45,15 +47,17 @@ public class JTEnemy {
 	public boolean isLockedOn = false; // had the enemy locked on to a target?
 	public float lockOnPosX = 0f; // x position of the target
 	public float lockOnPosY = 0f; // y position of the target
-	public float tgalfa = 0f; //tg alfa of the line which enemy is moving
+	public float alfa = 0f; //tg alfa of the line which enemy is moving
 
 	private Random randomPos = new Random(15);
 
 	private FloatBuffer vertexBuffer;
 	private FloatBuffer textureBuffer;
 	private ByteBuffer indexBuffer;
-	private float vertices[] = { 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-			1.0f, 0.0f, 0.0f, 1.0f, 0.0f, };
+//	private float vertices[] = { 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+//			1.0f, 0.0f, 0.0f, 1.0f, 0.0f, };
+	private float vertices[] = { -0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, 0.5f,
+			0.5f, 0.0f, -0.5f, 0.5f, 0.0f, };
 	private float texture[] = { 0.0f, 0.0f, //
 			1 / 5f, 0.0f, //
 			1 / 5f, 0.5f, //
@@ -79,7 +83,16 @@ public class JTEnemy {
 //		isLockedOn = false;
 //	}
 
+	public JTEnemy(Random r) {
+		randomPos = r;
+		init();
+	}
+	
 	public JTEnemy() {
+		init();
+	}
+
+	private void init() {
 		posY = randomPos.nextFloat() * 9;
 		posX = randomPos.nextFloat() * 9;
 		lockOnPosX = 0;
@@ -100,12 +113,13 @@ public class JTEnemy {
 		indexBuffer.put(indices);
 		indexBuffer.position(0);
 	}
+	
 
 	public void move(){
 		//wyznaczenie wzoru prostej po ktorej ma sie poruszac nasz przeciwnik
 		float a = (posY - lockOnPosY)/(posX - lockOnPosX);
 		float b = posY - a*posX;
-		tgalfa = a;
+		
 		//wyznaczenie wspó³rzêdnych punktu na prostej w zale¿noœci od szybkoœci prouszania siê
 		//wyznaczenie tego korzystaj¹c z wzoru na odleg³oœæ dwóch punktów w przestrzeni
 		float c = 1 + a*a;
@@ -117,13 +131,15 @@ public class JTEnemy {
 		if (delta < 0){
 			x = posX;
 			Log.v(TAG, "Delta ujemna");
+			Log.v(TAG, "enemy pos last: x: " + posX + " y: " + posY);
+			Log.v(TAG, "hero pos last: x: " + lockOnPosX + " y: " + lockOnPosY);
 		} else {
-			double x1 = (-d + Math.sqrt(delta))/(2*c); 
-			double x2 = (-d - Math.sqrt(delta))/(2*c); 
+			float x1 = (-d + FloatMath.sqrt(delta))/(2*c); 
+			float x2 = (-d - FloatMath.sqrt(delta))/(2*c); 
 			if (Math.abs(lockOnPosX - x1) < Math.abs(lockOnPosX - x2)){
-				x = (float) x1;
+				x = x1;
 			} else {
-				x = (float) x2;
+				x = x2;
 			}
 			
 		}
@@ -132,29 +148,20 @@ public class JTEnemy {
 		posX = x;
 		posY = y;
 		
-		
-//		if (this.posY - this.lockOnPosY > 1f) {
-//			this.posX = this.incrementToX();
-//			this.posY -= (JTEngine.ENEMY_SPEED);
-//		} else if (this.posY - this.lockOnPosY < -1f) {
-//			this.posX = this.decrementToX();
-//			this.posY += (JTEngine.ENEMY_SPEED);}
-//			// } else {
-//			// this.posY += (JTEngine.INTERCEPTOR_SPEED * 4);
-	}
-	
-	
-	public float incrementToX() {
-		// return ((JTEngine.INTERCEPTOR_SPEED * 4) - posY - lockOnPosY) *
-		// (lockOnPosX - posX) / (-lockOnPosY + posY);
-		return (posX - lockOnPosX)
-				* (posY - JTEngine.ENEMY_SPEED * 4 - lockOnPosY)
-				/ (posY - lockOnPosY) + lockOnPosX;
+		alfa = determineRotateAngle();
 	}
 
-	public float decrementToX() {
-		return (lockOnPosX - posX) * (JTEngine.ENEMY_SPEED * 4)
-				/ (lockOnPosY - posY) + posX;
+	private float determineRotateAngle() {
+		Point u = new Point(0, 1);
+		float uLength = 1;
+		PointF w = new PointF(lockOnPosX-posX, lockOnPosY-posY);
+		float wLength = FloatMath.sqrt(w.x*w.x + w.y*w.y);
+		float cos = (u.x*w.x + u.y*w.y)/(uLength*wLength);
+		if (w.x > 0){
+			return  360f - (float)(Math.acos(cos) * 360 / (2*Math.PI));
+		} else {
+			return (float) (Math.acos(cos) * 360 / (2*Math.PI));
+		}
 	}
 
 	public void draw(GL10 gl, int[] spriteSheet) {

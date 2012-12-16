@@ -5,6 +5,10 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
+
+import android.graphics.Point;
+import android.graphics.PointF;
+import android.util.FloatMath;
 /******************************************************************************* 
  * Filename : MyGraphView
  * 
@@ -24,16 +28,21 @@ import javax.microedition.khronos.opengles.GL10;
 //TODO Change the class to extend class JTDrawable(create it first)
 public class JTGoodGuy {
 
+	public static volatile float rotationAngle = 0f;
+	
 	private FloatBuffer vertexBuffer;
 	private FloatBuffer textureBuffer;
 	private ByteBuffer indexBuffer;
 //	private int[] textures = new int[1];
 
-	private float vertices[] = { //
-	0.0f, 0.0f, 0.0f,//
-			1.0f, 0.0f, 0.0f,//
-			1.0f, 1.0f, 0.0f,//
-			0.0f, 1.0f, 0.0f, };
+	private float vertices[] = { -0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, 0.5f,
+			0.5f, 0.0f, -0.5f, 0.5f, 0.0f, };
+	
+//	private float vertices[] = { //
+//	0.0f, 0.0f, 0.0f,//
+//			1.0f, 0.0f, 0.0f,//
+//			1.0f, 1.0f, 0.0f,//
+//			0.0f, 1.0f, 0.0f, };
 
 	private float texture[] = {//
 	0.0f, 0.0f,//
@@ -61,6 +70,19 @@ public class JTGoodGuy {
 		indexBuffer.put(indices);
 		indexBuffer.position(0);
 	}
+	
+	public static void determineRotateAngle(float lockOnPosX, float lockOnPosY) {
+		Point u = new Point(0, 1);
+		float uLength = 1;
+		PointF w = new PointF(lockOnPosX, lockOnPosY);
+		float wLength = FloatMath.sqrt(w.x*w.x + w.y*w.y);
+		float cos = (u.x*w.x + u.y*w.y)/(uLength*wLength);
+		if (w.x > 0){
+			rotationAngle = 360f - (float)(Math.acos(cos) * 360 / (2*Math.PI));
+		} else {
+			rotationAngle = (float) (Math.acos(cos) * 360 / (2*Math.PI));
+		}
+	}
 
 	public void draw(GL10 gl, int[] spriteSheet) {
 
@@ -83,35 +105,4 @@ public class JTGoodGuy {
 		gl.glDisable(GL10.GL_CULL_FACE);
 	}
 
-//	public void loadTexture(GL10 gl, int texture, Context context) {
-//
-//		InputStream imagestream = context.getResources().openRawResource(
-//				texture);
-//		Bitmap bitmap = null;
-//		try {
-//			BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
-//            bitmapOptions.inPreferredConfig = Bitmap.Config.RGB_565;
-//			bitmap = BitmapFactory.decodeStream(imagestream, null, bitmapOptions);
-//		} catch (Exception e) {
-//		} finally {
-//			try {
-//				imagestream.close();
-//				imagestream = null;
-//			} catch (IOException e) {
-//			}
-//		}
-//		gl.glGenTextures(1, textures, 0);
-//		gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
-//		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER,
-//				GL10.GL_NEAREST);
-//		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER,
-//				GL10.GL_LINEAR);
-//		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_S,
-//				GL10.GL_REPEAT);
-//		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_T,
-//				GL10.GL_REPEAT);
-//		GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
-//		bitmap.recycle();
-//
-//	}
 }
