@@ -26,10 +26,10 @@ import android.opengl.GLUtils;
  * laws and may not be copied.
  *******************************************************************************/
 public class JTTextures {
-	private int[] textures = new int[2];
+	private int[] textures = new int[4];
 
 	public JTTextures(GL10 gl) {
-		gl.glGenTextures(1, textures, 0);
+		gl.glGenTextures(4, textures, 0);
 	}
 
 	public int[] loadTexture(GL10 gl, int texture, Context context,

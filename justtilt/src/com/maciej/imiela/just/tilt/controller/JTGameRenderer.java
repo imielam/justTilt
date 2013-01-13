@@ -18,6 +18,7 @@ import com.maciej.imiela.just.tilt.model.JTBackground;
 import com.maciej.imiela.just.tilt.model.JTEnemy;
 import com.maciej.imiela.just.tilt.model.JTEngine;
 import com.maciej.imiela.just.tilt.model.JTGoodGuy;
+import com.maciej.imiela.just.tilt.model.JTPlayer;
 import com.maciej.imiela.just.tilt.model.JTTextures;
 import com.maciej.imiela.just.tilt.model.JTWeapon;
 /******************************************************************************* 
@@ -37,21 +38,19 @@ import com.maciej.imiela.just.tilt.model.JTWeapon;
  * laws and may not be copied.
  *******************************************************************************/
 public class JTGameRenderer extends Observable implements Renderer {
-	
+
 	private static String TAG = JTGameRenderer.class.getSimpleName();
 
-	private JTBackground background = new JTBackground();
-	private JTBackground backgroung1 = new JTBackground();
-	private JTGoodGuy player1 = new JTGoodGuy();
+	private JTBackground background = new JTBackground(2, new PointF(0, 0));
+	private JTBackground backgroung1 = new JTBackground(3, new PointF(
+			JTEngine.backgroundXPosition, JTEngine.backgroundYPosition));
+	private JTGoodGuy player1 = new JTGoodGuy(0);
 
 	private ArrayList<JTEnemy> enemies = new ArrayList<JTEnemy>();
-	// private JTEnemy[] enemies = new JTEnemy[JTEngine.TOTAL_INTERCEPTORS
-	// + JTEngine.TOTAL_SCOUTS + JTEngine.TOTAL_WARSHIPS - 1];
-	private JTTextures textureLoader;
-	private int[] spriteSheets = new int[2];
+	private JTTextures spriteTextureLoader;
+	private int[] spriteSheets = new int[4];
 	private List<JTWeapon> playerFire = new LinkedList<JTWeapon>();
 
-	private int goodGuyBankFrames = 0;
 	private long loopStart = 0;
 	private long loopEnd = 0;
 	private long loopRunTime = 0;
@@ -59,9 +58,9 @@ public class JTGameRenderer extends Observable implements Renderer {
 
 	private int count = 0;
 
-	// private float bgScroll1;
-	// private float bgScroll2;
-
+	/* (non-Javadoc)
+	 * @see android.opengl.GLSurfaceView.Renderer#onDrawFrame(javax.microedition.khronos.opengles.GL10)
+	 */
 	public void onDrawFrame(GL10 gl) {
 		loopStart = System.currentTimeMillis();
 		try {
@@ -75,24 +74,26 @@ public class JTGameRenderer extends Observable implements Renderer {
 		count++;
 		if (count >= 60) {
 			count = 0;
-			enemies.add(new JTEnemy(randomPos));
+			enemies.add(new JTEnemy(randomPos,1));
 		}
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 
 		scrollBackground1(gl);
 		scrollBackground2(gl);
 		movePlayer1(gl);
+		playerWeapons(gl);
 		moveEnemy(gl);
 
 		detectCollisions();
-
-		// All other game drawing will be called here
 
 		loopEnd = System.currentTimeMillis();
 		loopRunTime = ((loopEnd - loopStart));
 
 	}
 
+	/* (non-Javadoc)
+	 * @see android.opengl.GLSurfaceView.Renderer#onSurfaceChanged(javax.microedition.khronos.opengles.GL10, int, int)
+	 */
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 		gl.glViewport(0, 0, width, height);
 
@@ -102,16 +103,20 @@ public class JTGameRenderer extends Observable implements Renderer {
 
 	}
 
+	/* (non-Javadoc)
+	 * @see android.opengl.GLSurfaceView.Renderer#onSurfaceCreated(javax.microedition.khronos.opengles.GL10, javax.microedition.khronos.egl.EGLConfig)
+	 */
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-		// initializeEnemy();
-		// initializePlayerWeapons();
-		// initializeScouts();
-		// initializeWarships();
-		textureLoader = new JTTextures(gl);
-		spriteSheets = textureLoader.loadTexture(gl, JTEngine.CHARACTER_SHEET,
+		spriteTextureLoader = new JTTextures(gl);
+//		backgroundTextureLoader = new JTTextures(gl);
+		spriteSheets = spriteTextureLoader.loadTexture(gl, JTEngine.CHARACTER_SHEET,
 				JTEngine.context, 1);
-		spriteSheets = textureLoader.loadTexture(gl, JTEngine.WEAPONS_SHEET,
+		spriteSheets = spriteTextureLoader.loadTexture(gl, JTEngine.WEAPONS_SHEET,
 				JTEngine.context, 2);
+		spriteSheets = spriteTextureLoader.loadTexture(gl, JTEngine.BACKGROUND_LAYER_ONE,
+				JTEngine.context,3);
+		spriteSheets = spriteTextureLoader.loadTexture(gl, JTEngine.BACKGROUND_LAYER_TWO,
+				JTEngine.context,4);
 		/** enabling texture mapping */
 		gl.glEnable(GL10.GL_TEXTURE_2D);
 		/** inform openGL to test depth of every object onn the surface */
@@ -120,17 +125,18 @@ public class JTGameRenderer extends Observable implements Renderer {
 		gl.glDepthFunc(GL10.GL_LEQUAL);
 		// /** activate blending feature */
 		gl.glEnable(GL10.GL_BLEND);
-		// gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE);
-
-		gl.glEnable(GL10.GL_BLEND);
 		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-
-		background.loadTexture(gl, JTEngine.BACKGROUND_LAYER_ONE,
-				JTEngine.context);
-		backgroung1.loadTexture(gl, JTEngine.BACKGROUND_LAYER_TWO,
-				JTEngine.context);
+//
+//		background.loadTexture(gl, JTEngine.BACKGROUND_LAYER_ONE,
+//				JTEngine.context);
+//		backgroung1.loadTexture(gl, JTEngine.BACKGROUND_LAYER_TWO,
+//				JTEngine.context);
 	}
 
+	public synchronized JTGoodGuy getPlayer1() {
+		return player1;
+	}
+	
 	private void detectCollisions() {
 		Iterator<JTWeapon> w = playerFire.iterator();
 		while (w.hasNext()) {
@@ -138,9 +144,16 @@ public class JTGameRenderer extends Observable implements Renderer {
 			Iterator<JTEnemy> e = enemies.iterator();
 			while (e.hasNext()) {
 				JTEnemy enemy = e.next();
-				if (!enemy.isDestroyed && enemy.posY < 10.25f) {
-					if ((fire.posY >= enemy.posY - 1 && fire.posY <= enemy.posY)
-							&& (fire.posX <= enemy.posX + 1 && fire.posX >= enemy.posX - 1)) {
+				if (!enemy.isDestroyed) {
+					if ((enemy.currentPosition.x - enemy.lockOnPosX < 0.5f && enemy.currentPosition.x
+							- enemy.lockOnPosX > -0.5f)
+							&& (enemy.currentPosition.y - enemy.lockOnPosY < 0.5f && enemy.currentPosition.y
+									- enemy.lockOnPosY > -0.5f)) {
+						this.setChanged();
+						this.notifyObservers("Colision Detected");
+					}
+					if ((fire.currentPosition.y >= enemy.currentPosition.y - 1 && fire.currentPosition.y <= enemy.currentPosition.y)
+							&& (fire.currentPosition.x <= enemy.currentPosition.x + 1 && fire.currentPosition.x >= enemy.currentPosition.x - 1)) {
 						enemy.applyDamage();
 						if (enemy.isDestroyed) {
 							e.remove();
@@ -151,33 +164,36 @@ public class JTGameRenderer extends Observable implements Renderer {
 				}
 			}
 		}
+		Iterator<JTEnemy> e = enemies.iterator();
+		while (e.hasNext()) {
+			JTEnemy enemy = e.next();
+			if (!enemy.isDestroyed) {
+				if ((enemy.currentPosition.x - enemy.lockOnPosX < 0.5f && enemy.currentPosition.x
+						- enemy.lockOnPosX > -0.5f)
+						&& (enemy.currentPosition.y - enemy.lockOnPosY < 0.5f && enemy.currentPosition.y
+								- enemy.lockOnPosY > -0.5f)) {
+					this.setChanged();
+					this.notifyObservers("Colision Detected");
+				}
+			}
+		}
 
 	}
 
-	private void firePlayerWeapon(GL10 gl) {
+	private void playerWeapons(GL10 gl) {
 		if (JTEngine.fire) {
-			playerFire.add(new JTWeapon());
+			playerFire.add(new JTWeapon(1));
 			JTEngine.fire = false;
 		}
 		Iterator<JTWeapon> itr = playerFire.iterator();
 		while (itr.hasNext()) {
 			JTWeapon fire = itr.next();
 			if (fire.shotFired) {
-				if (fire.posY > 10.25) {
+				if (fire.currentPosition.y > 10.25) {
 					itr.remove();
 				} else {
-					fire.posY += JTEngine.PLAYER_BULLET_SPEED;
-					gl.glMatrixMode(GL10.GL_MODELVIEW);
-					gl.glLoadIdentity();
-					gl.glPushMatrix();
-					gl.glScalef(.1f, .1f, 0f);
-					gl.glTranslatef(fire.posX, fire.posY, 0f);
-					gl.glMatrixMode(GL10.GL_TEXTURE);
-					gl.glLoadIdentity();
-					gl.glTranslatef(0.0f, 0f, 0.0f);
-					fire.draw(gl, spriteSheets);
-					gl.glPopMatrix();
-					gl.glLoadIdentity();
+					fire.currentPosition.y += JTEngine.PLAYER_BULLET_SPEED;
+					fire.move(gl, spriteSheets, new PointF(0, 0));
 				}
 			}
 		}
@@ -185,92 +201,13 @@ public class JTGameRenderer extends Observable implements Renderer {
 	private void moveEnemy(GL10 gl) {
 		for (JTEnemy enemy : enemies) {
 			if (!enemy.isDestroyed) {
-
-				gl.glMatrixMode(GL10.GL_MODELVIEW);
-				gl.glLoadIdentity();
-				gl.glPushMatrix();
-				gl.glScalef(.1f, .1f, 1f);
-				enemy.lockOnPosX = JTEngine.playerBankPosX;
-				enemy.lockOnPosY = JTEngine.playerBankPosY;
-				enemy.isLockedOn = true;
-				enemy.move();
-				// TODO Colision detection in move enemy, change it to
-				// colisionDetection method
-				if ((enemy.posX - enemy.lockOnPosX < 0.5f && enemy.posX
-						- enemy.lockOnPosX > -0.5f)
-						&& (enemy.posY - enemy.lockOnPosY < 0.5f && enemy.posY
-								- enemy.lockOnPosY > -0.5f)) {
-					this.setChanged();
-					this.notifyObservers("dom");
-				}
-
-				gl.glTranslatef(enemy.posX, enemy.posY, 0f);
-				gl.glRotatef(enemy.alfa, 0, 0, 1);
-				gl.glMatrixMode(GL10.GL_TEXTURE);
-				gl.glLoadIdentity();
-				gl.glTranslatef(0f, 0f, 0.0f);
-				enemy.draw(gl, spriteSheets);
-				gl.glPopMatrix();
-				gl.glLoadIdentity();
-
-				// }
+				enemy.move(gl, spriteSheets, new PointF(0, 0));
 			}
 		}
 	}
 
 	private void movePlayer1(GL10 gl) {
-		switch (JTEngine.playerFlightActionY) {
-		case JTEngine.PLAYER_BANK_FORWARD:
-			if (JTEngine.playerBankPosY < 9.5f) {
-				JTEngine.playerBankPosY += JTEngine.PLAYER_BANK_SPEED;
-			}
-			break;
-		case JTEngine.PLAYER_BANK_BACKWARD:
-			if (JTEngine.playerBankPosY > 0.5f) {
-				JTEngine.playerBankPosY -= JTEngine.PLAYER_BANK_SPEED;
-			}
-			break;
-		default:
-
-		}
-
-		switch (JTEngine.playerFlightAction) {
-		case JTEngine.PLAYER_BANK_LEFT_1:
-			if (JTEngine.playerBankPosX > 0.5f) {
-				JTEngine.playerBankPosX -= JTEngine.PLAYER_BANK_SPEED;
-			}
-			break;
-		case JTEngine.PLAYER_BANK_RIGHT_1:
-			if (JTEngine.playerBankPosX < 9.5f) {
-				JTEngine.playerBankPosX += JTEngine.PLAYER_BANK_SPEED;
-			}
-			break;
-		case JTEngine.PLAYER_RELEASE:
-			gl.glMatrixMode(GL10.GL_MODELVIEW);
-			gl.glLoadIdentity();
-			gl.glPushMatrix();
-			gl.glScalef(.1f, .1f, 1f);
-			gl.glTranslatef(JTEngine.playerBankPosX, JTEngine.playerBankPosY,
-					0f);
-			gl.glMatrixMode(GL10.GL_TEXTURE);
-			gl.glLoadIdentity();
-			gl.glTranslatef(2 / 5f, 0.5f, 0.0f);
-			goodGuyBankFrames += 1;
-		}
-		gl.glMatrixMode(GL10.GL_MODELVIEW);
-		gl.glLoadIdentity();
-		gl.glPushMatrix();
-		gl.glScalef(.1f, .1f, 1f);
-		gl.glTranslatef(JTEngine.playerBankPosX, JTEngine.playerBankPosY, 0f);
-		gl.glRotatef(JTGoodGuy.rotationAngle, 0, 0, 1);
-		gl.glMatrixMode(GL10.GL_TEXTURE);
-		gl.glLoadIdentity();
-		gl.glTranslatef(2 / 5f, 0.5f, 0.0f);
-		player1.draw(gl, spriteSheets);
-		gl.glPopMatrix();
-		gl.glLoadIdentity();
-		firePlayerWeapon(gl);
-
+		player1.move(gl, spriteSheets, new PointF(2 / 5f, 0.5f));
 	}
 
 	/**
@@ -282,23 +219,8 @@ public class JTGameRenderer extends Observable implements Renderer {
 	 * @param gl
 	 */
 	private void scrollBackground1(GL10 gl) {
-		// if (bgScroll1 == Float.MAX_VALUE)
-		// bgScroll1 = 0f;
-		/** reset the scale and translate of the Model matrix mode */
-		gl.glMatrixMode(GL10.GL_MODELVIEW);
-		gl.glLoadIdentity();
-		gl.glPushMatrix();
-		// gl.glScalef(1f, 1f, 1f);
-		gl.glTranslatef(0f, 0f, 0f);
-
-		gl.glMatrixMode(GL10.GL_TEXTURE);
-		gl.glLoadIdentity();
-		gl.glTranslatef(0.0f, 0.0f, 0.0f);
-
-		background.draw(gl);
-		gl.glPopMatrix();
-		// bgScroll1 += JTEngine.SCROLL_BACKGROUND_1;
-		gl.glLoadIdentity();
+		
+		background.move(gl, spriteSheets, new PointF(0, 0), new PointF(1, 1));
 	}
 
 	private void scrollBackground2(GL10 gl) {
@@ -328,24 +250,12 @@ public class JTGameRenderer extends Observable implements Renderer {
 				JTEngine.backgroundXPosition += JTEngine.SCROLL_BACKGROUND_1;
 			}
 			break;
-		case JTEngine.PLAYER_RELEASE:
 		default:
 			break;
 		}
-
-		gl.glMatrixMode(GL10.GL_MODELVIEW);
-		gl.glLoadIdentity();
-		gl.glPushMatrix();
-		gl.glScalef(0.5f * JTEngine.SCREEN_PROPORTION, 0.5f, 1f);
-		gl.glTranslatef(JTEngine.backgroundXPosition,
-				JTEngine.backgroundYPosition, 0f);
-
-		gl.glMatrixMode(GL10.GL_TEXTURE);
-		gl.glLoadIdentity();
-		gl.glTranslatef(0.0f, 0.0f, 0.0f);
-		backgroung1.draw(gl);
-		gl.glPopMatrix();
-		gl.glLoadIdentity();
+		backgroung1.currentPosition = new PointF(JTEngine.backgroundXPosition, JTEngine.backgroundYPosition);
+		backgroung1.move(gl, spriteSheets, new PointF(0, 0), new PointF(0.5f * JTEngine.SCREEN_PROPORTION, 0.5f));
+		
 	}
 
 }

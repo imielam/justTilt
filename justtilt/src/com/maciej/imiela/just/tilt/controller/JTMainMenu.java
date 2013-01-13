@@ -29,7 +29,7 @@ import com.maciej.imiela.just.tilt.model.JTMusic;
  *******************************************************************************/
 public class JTMainMenu extends Activity {
 
-	private JTEngine engine;
+//	private JTEngine engine = new JTEngine();
 
 	/**
 	 * called when the activity is first created.
@@ -38,44 +38,6 @@ public class JTMainMenu extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
-		AudioManager am = (AudioManager) this
-				.getSystemService(Context.AUDIO_SERVICE);
-		if (am.getRingerMode() == AudioManager.RINGER_MODE_NORMAL) {
-			/** Fire up background music */
-
-			JTEngine.musicThread = new Thread() {
-
-				private final int DELAY = 10000;
-
-				// private volatile boolean stop = false;
-				//
-				// public void requestStop() {
-				// stop = true;
-				// }
-
-				public void run() {
-					Intent bgmusic = new Intent(getApplicationContext(),
-							JTMusic.class);
-					startService(bgmusic);
-					JTEngine.context = getApplicationContext();
-
-					try {
-						Thread.sleep(DELAY);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						// e.printStackTrace();
-						return;
-					}
-				}
-			};
-
-			JTEngine.musicThread.start();
-		} else {
-			JTEngine.context = getApplicationContext();
-		}
-
-		engine = new JTEngine();
 
 		/**
 		 * Set menu button options
@@ -103,13 +65,7 @@ public class JTMainMenu extends Activity {
 		exit.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
-				boolean clean = false;
-				clean = engine.onExit(v);
-				if (clean) {
-					int pid = android.os.Process.myPid();
-					android.os.Process.killProcess(pid);
-				}
-
+				JTMainMenu.this.finish();
 			}
 		});
 	}

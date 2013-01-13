@@ -5,15 +5,19 @@ import java.util.Observer;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.PointF;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.view.MotionEvent;
 
 import com.maciej.imiela.just.tilt.model.JTEngine;
-import com.maciej.imiela.just.tilt.model.JTGoodGuy;
+import com.maciej.imiela.just.tilt.model.JTMusic;
 import com.maciej.imiela.just.tilt.view.JTGameView;
 
 @TargetApi(13)
@@ -40,6 +44,9 @@ public class JTGame extends Activity implements SensorEventListener, Observer {
 	private SensorManager sm;
 	private float prevY, prevX, sensorY, sensorX;
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onCreate(android.os.Bundle)
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -55,13 +62,9 @@ public class JTGame extends Activity implements SensorEventListener, Observer {
 		}
 	}
 
-	@Override
-	protected void onPause() {
-		super.onPause();
-		gameView.onPause();
-		sm.unregisterListener(this);
-	}
-
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onTouchEvent(android.view.MotionEvent)
+	 */
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 			switch (event.getAction()) {
@@ -72,9 +75,15 @@ public class JTGame extends Activity implements SensorEventListener, Observer {
 		return super.onTouchEvent(event);
 	}
 
+	/* (non-Javadoc)
+	 * @see android.hardware.SensorEventListener#onAccuracyChanged(android.hardware.Sensor, int)
+	 */
 	public void onAccuracyChanged(Sensor sensor, int accuracy) {
 	}
 
+	/* (non-Javadoc)
+	 * @see android.hardware.SensorEventListener#onSensorChanged(android.hardware.SensorEvent)
+	 */
 	public void onSensorChanged(SensorEvent event) {
 		// TODO think about synchronization and multithreading
 
@@ -94,7 +103,7 @@ public class JTGame extends Activity implements SensorEventListener, Observer {
 			changed = true;
 		}
 		if (changed) {
-			JTGoodGuy.determineRotateAngle(sensorX, -sensorY);
+			gameView.getRenderer().getPlayer1().setWhereToGo(new PointF(sensorX, -sensorY));
 			changed = false;
 		}
 
@@ -116,17 +125,73 @@ public class JTGame extends Activity implements SensorEventListener, Observer {
 		}
 
 	}
+	
+	/* (non-Javadoc)
+	 * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
+	 */
+	public void update(Observable arg0, Object arg1) {
+		Intent intent = new Intent(this, JTEndActivity.class);
+		startActivity(intent);
+		this.finish();
+	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onResume()
+	 */
 	@Override
 	protected void onResume() {
 		super.onResume();
 		gameView.onResume();
 		sm.registerListener(this, accelerometr,
 				SensorManager.SENSOR_DELAY_NORMAL);
+		
+		AudioManager am = (AudioManager) this
+				.getSystemService(Context.AUDIO_SERVICE);
+		if (am.getRingerMode() == AudioManager.RINGER_MODE_NORMAL) {
+			/** Fire up background music */
+
+			JTEngine.musicThread = new Thread() {
+
+				private final int DELAY = 10000;
+
+				// private volatile boolean stop = false;
+				//
+				// public void requestStop() {
+				// stop = true;
+				// }
+
+				public void run() {
+					Intent bgmusic = new Intent(getApplicationContext(),
+							JTMusic.class);
+					startService(bgmusic);
+					JTEngine.context = getApplicationContext();
+
+					try {
+						Thread.sleep(DELAY);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						// e.printStackTrace();
+						return;
+					}
+				}
+			};
+
+			JTEngine.musicThread.start();
+		} else {
+			JTEngine.context = getApplicationContext();
+		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onPause()
+	 */
+	@Override
+	protected void onPause() {
+		super.onPause();
+		gameView.onPause();
+		sm.unregisterListener(this);
+		JTEngine.onExit();
 	}
 
-	public void update(Observable arg0, Object arg1) {
-		this.finish();
-	}
 
 }

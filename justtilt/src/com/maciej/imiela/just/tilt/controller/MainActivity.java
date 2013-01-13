@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.Menu;
 
 import com.maciej.imiela.just.tilt.model.JTEngine;
 /******************************************************************************* 
@@ -39,11 +38,5 @@ public class MainActivity extends Activity {
 				overridePendingTransition(R.layout.fadein, R.layout.fadeout);
 			}
 		}, JTEngine.GAME_THREAD_DELAY);
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.activity_main, menu);
-		return true;
 	}
 }

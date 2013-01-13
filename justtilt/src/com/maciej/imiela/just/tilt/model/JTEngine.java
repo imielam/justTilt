@@ -85,11 +85,10 @@ public class JTEngine {
 	 * Method that is called when the Exit button is pressed. Perform any
 	 * housekeeping that is needed in the game before it can exit cleanly.
 	 * 
-	 * @param v
 	 * @return true - when everything went smooth; false - if anything out of
 	 *         ordinary happened
 	 */
-	public boolean onExit(View v) {
+	public static boolean onExit() {
 		if (JTEngine.musicThread == null){
 			return true;
 		}
